@@ -1,0 +1,849 @@
+Starting project at C:\Users\DboxAdmin\skill_projects\expense-tracker
+React Compiler enabled
+Starting Metro Bundler
+
+Waiting on http://localhost:8099
+
+Logs for your project will appear below.
+Android Bundled 2490ms node_modules\expo-router\entry.js (1960 modules)
+Android Bundled 2517ms node_modules\expo-router\entry.js (1 module)
+Android Bundled 2427ms node_modules\expo-router\entry.js (1 module)
+ ERROR  [ReferenceError: Property 'StyleSheet' doesn't exist] 
+
+Code: icon.tsx
+[0m [90m 220 |[39m [36mconst[39m [33mGRID[39m [33m=[39m [35m24[39m[33m;[39m
+ [90m 221 |[39m
+[31m[1m>[22m[39m[90m 222 |[39m [36mconst[39m styles [33m=[39m [33mStyleSheet[39m[33m.[39mcreate({
+ [90m     |[39m                [31m[1m^[22m[39m
+ [90m 223 |[39m   box[33m:[39m {
+ [90m 224 |[39m     [90m// Reserves the layout box without clipping the compensated canvas.[39m
+ [90m 225 |[39m     overflow[33m:[39m [32m'visible'[39m[33m,[39m[0m
+Call Stack
+  <global> (src\components\ui\icon.tsx:222:16)
+ ERROR  SyntaxError: C:\Users\DboxAdmin\skill_projects\expense-tracker\src\components\ui\icon.tsx: Identifier 'GRID' has already been declared. (228:6)
+
+  226 |
+  227 | /** The grid every path is authored on. */
+> 228 | const GRID = 24;
+      |       ^
+  229 |
+  230 | const styles = StyleSheet.create({
+  231 |   box: {
+    at constructor (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:369:19)
+    at TypeScriptParserMixin.raise (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6622:19)
+    at TypeScriptScopeHandler.checkRedeclarationInScope (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:1623:19)
+    at TypeScriptScopeHandler.declareName (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:1589:12)
+    at TypeScriptScopeHandler.declareName (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4898:11)
+    at TypeScriptParserMixin.declareNameFromIdentifier (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:7590:16)
+    at TypeScriptParserMixin.checkIdentifier (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:7586:12)
+    at TypeScriptParserMixin.checkLVal (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:7523:12)
+    at TypeScriptParserMixin.parseVarId (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:13446:10)
+    at TypeScriptParserMixin.parseVarId (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9775:11)
+    at TypeScriptParserMixin.parseVar (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:13417:12)
+    at TypeScriptParserMixin.parseVarStatement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:13264:10)
+    at TypeScriptParserMixin.parseVarStatement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9431:31)
+    at TypeScriptParserMixin.parseStatementContent (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12885:23)
+    at TypeScriptParserMixin.parseStatementContent (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9531:18)
+    at TypeScriptParserMixin.parseStatementLike (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12801:17)
+    at TypeScriptParserMixin.parseModuleItem (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12778:17)
+    at TypeScriptParserMixin.parseBlockOrModuleBlockBody (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:13350:36)
+    at TypeScriptParserMixin.parseBlockBody (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:13343:10)
+    at TypeScriptParserMixin.parseProgram (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12656:10)
+    at TypeScriptParserMixin.parseTopLevel (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12646:25)
+    at TypeScriptParserMixin.parse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:14522:25)
+    at TypeScriptParserMixin.parse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10149:18)
+    at parse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:14535:26)
+    at parser (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\core\lib\parser\index.js:41:34)
+    at parser.next (<anonymous>)
+    at normalizeFile (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\core\lib\transformation\normalize-file.js:51:37)
+    at normalizeFile.next (<anonymous>)
+    at run (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\core\lib\transformation\index.js:22:50)
+    at run.next (<anonymous>)
+    at transform (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\core\lib\transform.js:22:33)
+    at transform.next (<anonymous>)
+    at evaluateSync (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\gensync\index.js:251:28)
+    at sync (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\gensync\index.js:89:14)
+    at stopHiding - secret - don't use this - v1 (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\core\lib\errors\rewrite-stack-trace.js:47:12)
+    at Object.transformSync (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\core\lib\transform.js:40:76)
+    at parseWithBabel (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@expo\metro-config\build\transformSync.js:75:18)
+    at transformSync (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@expo\metro-config\build\transformSync.js:54:16)
+    at Object.transform (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@expo\metro-config\build\babel-transformer.js:146:58)
+    at transformJSWithBabel (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@expo\metro-config\build\transform-worker\metro-transform-worker.js:495:47)
+    at Object.transform (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@expo\metro-config\build\transform-worker\metro-transform-worker.js:614:12)
+    at Object.transform (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@expo\metro-config\build\transform-worker\transform-worker.js:179:19)
+    at transformFile (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\metro\src\DeltaBundler\Worker.flow.js:67:36)
+    at Object.transform (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\metro\src\DeltaBundler\Worker.flow.js:42:10)
+    at execFunction (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\jest-worker\build\workers\threadChild.js:167:17)
+    at execHelper (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\jest-worker\build\workers\threadChild.js:155:5)
+    at execMethod (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\jest-worker\build\workers\threadChild.js:158:5)
+    at MessagePort.messageListener (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\jest-worker\build\workers\threadChild.js:52:7)
+    at [nodejs.internal.kHybridDispatch] (node:internal/event_target:848:20)
+    at MessagePort.<anonymous> (node:internal/per_context/messageport:23:28)
+ ERROR  SyntaxError: C:\Users\DboxAdmin\skill_projects\expense-tracker\src\components\ui\icon.tsx: Identifier 'GRID' has already been declared. (228:6)
+
+  226 |
+  227 | /** The grid every path is authored on. */
+> 228 | const GRID = 24;
+      |       ^
+  229 |
+  230 | const styles = StyleSheet.create({
+  231 |   box: {
+    at constructor (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:369:19)
+    at TypeScriptParserMixin.raise (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6622:19)
+    at TypeScriptScopeHandler.checkRedeclarationInScope (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:1623:19)
+    at TypeScriptScopeHandler.declareName (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:1589:12)
+    at TypeScriptScopeHandler.declareName (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4898:11)
+    at TypeScriptParserMixin.declareNameFromIdentifier (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:7590:16)
+    at TypeScriptParserMixin.checkIdentifier (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:7586:12)
+    at TypeScriptParserMixin.checkLVal (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:7523:12)
+    at TypeScriptParserMixin.parseVarId (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:13446:10)
+    at TypeScriptParserMixin.parseVarId (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9775:11)
+    at TypeScriptParserMixin.parseVar (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:13417:12)
+    at TypeScriptParserMixin.parseVarStatement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:13264:10)
+    at TypeScriptParserMixin.parseVarStatement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9431:31)
+    at TypeScriptParserMixin.parseStatementContent (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12885:23)
+    at TypeScriptParserMixin.parseStatementContent (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9531:18)
+    at TypeScriptParserMixin.parseStatementLike (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12801:17)
+    at TypeScriptParserMixin.parseModuleItem (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12778:17)
+    at TypeScriptParserMixin.parseBlockOrModuleBlockBody (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:13350:36)
+    at TypeScriptParserMixin.parseBlockBody (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:13343:10)
+    at TypeScriptParserMixin.parseProgram (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12656:10)
+    at TypeScriptParserMixin.parseTopLevel (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12646:25)
+    at TypeScriptParserMixin.parse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:14522:25)
+    at TypeScriptParserMixin.parse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10149:18)
+    at parse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:14535:26)
+    at parser (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\core\lib\parser\index.js:41:34)
+    at parser.next (<anonymous>)
+    at normalizeFile (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\core\lib\transformation\normalize-file.js:51:37)
+    at normalizeFile.next (<anonymous>)
+    at run (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\core\lib\transformation\index.js:22:50)
+    at run.next (<anonymous>)
+    at transform (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\core\lib\transform.js:22:33)
+    at transform.next (<anonymous>)
+    at evaluateSync (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\gensync\index.js:251:28)
+    at sync (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\gensync\index.js:89:14)
+    at stopHiding - secret - don't use this - v1 (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\core\lib\errors\rewrite-stack-trace.js:47:12)
+    at Object.transformSync (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\core\lib\transform.js:40:76)
+    at parseWithBabel (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@expo\metro-config\build\transformSync.js:75:18)
+    at transformSync (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@expo\metro-config\build\transformSync.js:54:16)
+    at Object.transform (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@expo\metro-config\build\babel-transformer.js:146:58)
+    at transformJSWithBabel (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@expo\metro-config\build\transform-worker\metro-transform-worker.js:495:47)
+    at Object.transform (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@expo\metro-config\build\transform-worker\metro-transform-worker.js:614:12)
+    at Object.transform (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@expo\metro-config\build\transform-worker\transform-worker.js:179:19)
+    at transformFile (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\metro\src\DeltaBundler\Worker.flow.js:67:36)
+    at Object.transform (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\metro\src\DeltaBundler\Worker.flow.js:42:10)
+    at execFunction (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\jest-worker\build\workers\threadChild.js:167:17)
+    at execHelper (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\jest-worker\build\workers\threadChild.js:155:5)
+    at execMethod (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\jest-worker\build\workers\threadChild.js:158:5)
+    at MessagePort.messageListener (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\jest-worker\build\workers\threadChild.js:52:7)
+    at [nodejs.internal.kHybridDispatch] (node:internal/event_target:848:20)
+    at MessagePort.<anonymous> (node:internal/per_context/messageport:23:28)
+ ERROR  SyntaxError: C:\Users\DboxAdmin\skill_projects\expense-tracker\src\components\navigation\glass-nav-bar.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (256:6)
+
+  254 |           {label}
+  255 |         </Text>
+> 256 |       </Animated.View>
+      |       ^
+  257 |     </Pressable>
+  258 |   );
+  259 | }
+    at constructor (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:369:19)
+    at TypeScriptParserMixin.raise (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6622:19)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4760:18)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at TypeScriptParserMixin.parseExpressionBase (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10810:23)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:17)
+    at TypeScriptParserMixin.jsxParseExpressionContainer (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4650:31)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4729:36)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4716:32)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:17)
+    at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12527:17)
+    at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11706:28)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11362:23)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4782:20)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+ ERROR  SyntaxError: C:\Users\DboxAdmin\skill_projects\expense-tracker\src\components\navigation\glass-nav-bar.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (256:6)
+
+  254 |           {label}
+  255 |         </Text>
+> 256 |       </Animated.View>
+      |       ^
+  257 |     </Pressable>
+  258 |   );
+  259 | }
+    at constructor (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:369:19)
+    at TypeScriptParserMixin.raise (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6622:19)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4760:18)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at TypeScriptParserMixin.parseExpressionBase (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10810:23)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:17)
+    at TypeScriptParserMixin.jsxParseExpressionContainer (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4650:31)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4729:36)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4716:32)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:17)
+    at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12527:17)
+    at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11706:28)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11362:23)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4782:20)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+ ERROR  SyntaxError: C:\Users\DboxAdmin\skill_projects\expense-tracker\src\components\navigation\glass-nav-bar.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (251:6)
+
+  249 |           {label}
+  250 |         </Text>
+> 251 |       </Animated.View>
+      |       ^
+  252 |     </Pressable>
+  253 |   );
+  254 | }
+    at constructor (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:369:19)
+    at TypeScriptParserMixin.raise (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6622:19)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4760:18)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at TypeScriptParserMixin.parseExpressionBase (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10810:23)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:17)
+    at TypeScriptParserMixin.jsxParseExpressionContainer (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4650:31)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4729:36)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4716:32)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:17)
+    at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12527:17)
+    at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11706:28)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11362:23)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4782:20)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+ ERROR  SyntaxError: C:\Users\DboxAdmin\skill_projects\expense-tracker\src\components\navigation\glass-nav-bar.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (251:6)
+
+  249 |           {label}
+  250 |         </Text>
+> 251 |       </Animated.View>
+      |       ^
+  252 |     </Pressable>
+  253 |   );
+  254 | }
+    at constructor (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:369:19)
+    at TypeScriptParserMixin.raise (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6622:19)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4760:18)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at TypeScriptParserMixin.parseExpressionBase (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10810:23)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:17)
+    at TypeScriptParserMixin.jsxParseExpressionContainer (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4650:31)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4729:36)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4716:32)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:17)
+    at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12527:17)
+    at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11706:28)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11362:23)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4782:20)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+ ERROR  SyntaxError: C:\Users\DboxAdmin\skill_projects\expense-tracker\src\components\navigation\glass-nav-bar.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (251:6)
+
+  249 |           {label}
+  250 |         </Text>
+> 251 |       </Animated.View>
+      |       ^
+  252 |     </Pressable>
+  253 |   );
+  254 | }
+    at constructor (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:369:19)
+    at TypeScriptParserMixin.raise (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6622:19)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4760:18)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at TypeScriptParserMixin.parseExpressionBase (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10810:23)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:17)
+    at TypeScriptParserMixin.jsxParseExpressionContainer (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4650:31)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4729:36)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4716:32)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:17)
+    at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12527:17)
+    at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11706:28)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11362:23)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4782:20)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+ ERROR  SyntaxError: C:\Users\DboxAdmin\skill_projects\expense-tracker\src\components\navigation\glass-nav-bar.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (242:6)
+
+  240 |           {label}
+  241 |         </Text>
+> 242 |       </Animated.View>
+      |       ^
+  243 |     </Pressable>
+  244 |   );
+  245 | }
+    at constructor (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:369:19)
+    at TypeScriptParserMixin.raise (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6622:19)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4760:18)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at TypeScriptParserMixin.parseExpressionBase (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10810:23)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:17)
+    at TypeScriptParserMixin.jsxParseExpressionContainer (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4650:31)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4729:36)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4716:32)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:17)
+    at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12527:17)
+    at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11706:28)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11362:23)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4782:20)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+ ERROR  SyntaxError: C:\Users\DboxAdmin\skill_projects\expense-tracker\src\components\navigation\glass-nav-bar.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (242:6)
+
+  240 |           {label}
+  241 |         </Text>
+> 242 |       </Animated.View>
+      |       ^
+  243 |     </Pressable>
+  244 |   );
+  245 | }
+    at constructor (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:369:19)
+    at TypeScriptParserMixin.raise (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6622:19)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4760:18)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at TypeScriptParserMixin.parseExpressionBase (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10810:23)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:17)
+    at TypeScriptParserMixin.jsxParseExpressionContainer (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4650:31)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4729:36)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4716:32)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:17)
+    at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12527:17)
+    at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11706:28)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11362:23)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4782:20)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+ ERROR  SyntaxError: C:\Users\DboxAdmin\skill_projects\expense-tracker\src\components\navigation\glass-nav-bar.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (246:6)
+
+  244 |           {label}
+  245 |         </Text>
+> 246 |       </Animated.View>
+      |       ^
+  247 |     </Pressable>
+  248 |   );
+  249 | }
+    at constructor (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:369:19)
+    at TypeScriptParserMixin.raise (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6622:19)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4760:18)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at TypeScriptParserMixin.parseExpressionBase (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10810:23)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:17)
+    at TypeScriptParserMixin.jsxParseExpressionContainer (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4650:31)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4729:36)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4716:32)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:17)
+    at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12527:17)
+    at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11706:28)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11362:23)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4782:20)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+ ERROR  SyntaxError: C:\Users\DboxAdmin\skill_projects\expense-tracker\src\components\navigation\glass-nav-bar.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (246:6)
+
+  244 |           {label}
+  245 |         </Text>
+> 246 |       </Animated.View>
+      |       ^
+  247 |     </Pressable>
+  248 |   );
+  249 | }
+    at constructor (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:369:19)
+    at TypeScriptParserMixin.raise (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6622:19)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4760:18)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at TypeScriptParserMixin.parseExpressionBase (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10810:23)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:17)
+    at TypeScriptParserMixin.jsxParseExpressionContainer (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4650:31)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4729:36)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4716:32)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:17)
+    at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12527:17)
+    at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11706:28)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11362:23)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4782:20)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+ ERROR  SyntaxError: C:\Users\DboxAdmin\skill_projects\expense-tracker\src\components\navigation\glass-nav-bar.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (246:6)
+
+  244 |           {label}
+  245 |         </Text>
+> 246 |       </Animated.View>
+      |       ^
+  247 |     </Pressable>
+  248 |   );
+  249 | }
+    at constructor (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:369:19)
+    at TypeScriptParserMixin.raise (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6622:19)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4760:18)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at TypeScriptParserMixin.parseExpressionBase (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10810:23)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:17)
+    at TypeScriptParserMixin.jsxParseExpressionContainer (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4650:31)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4729:36)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4716:32)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:17)
+    at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12527:17)
+    at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11706:28)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11362:23)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4782:20)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+ ERROR  SyntaxError: C:\Users\DboxAdmin\skill_projects\expense-tracker\src\components\navigation\glass-nav-bar.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (246:6)
+
+  244 |           {label}
+  245 |         </Text>
+> 246 |       </Animated.View>
+      |       ^
+  247 |     </Pressable>
+  248 |   );
+  249 | }
+    at constructor (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:369:19)
+    at TypeScriptParserMixin.raise (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6622:19)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4760:18)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at TypeScriptParserMixin.parseExpressionBase (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10810:23)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:17)
+    at TypeScriptParserMixin.jsxParseExpressionContainer (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4650:31)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4729:36)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4716:32)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:17)
+    at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12527:17)
+    at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11706:28)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11362:23)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4782:20)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+ ERROR  SyntaxError: C:\Users\DboxAdmin\skill_projects\expense-tracker\src\components\navigation\glass-nav-bar.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (246:6)
+
+  244 |           {label}
+  245 |         </Text>
+> 246 |       </Animated.View>
+      |       ^
+  247 |     </Pressable>
+  248 |   );
+  249 | }
+    at constructor (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:369:19)
+    at TypeScriptParserMixin.raise (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6622:19)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4760:18)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at TypeScriptParserMixin.parseExpressionBase (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10810:23)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10806:17)
+    at TypeScriptParserMixin.jsxParseExpressionContainer (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4650:31)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4729:36)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4716:32)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4767:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4777:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10857:21)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:39
+    at TypeScriptParserMixin.tryParse (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:6930:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9798:18)
+    at C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12460:12)
+    at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10826:17)
+    at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:12527:17)
+    at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11706:28)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11362:23)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:4782:20)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11107:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11092:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:11072:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:9860:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10925:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
+Android Bundled 224ms node_modules\expo-router\entry.js (1 module)
