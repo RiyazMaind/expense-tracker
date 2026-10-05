@@ -884,3 +884,6 @@ Android Bundled 135ms node_modules\expo-router\entry.js (1 module)
  LOG  [add-expense] saved {"amountPaise": 5050, "category": "food", "dateKey": "2026-10-04", "note": null}
 Android Bundled 192ms node_modules\expo-router\entry.js (1 module)
  LOG  [add-expense] saved {"amountPaise": 5000, "category": "transport", "dateKey": "2026-10-06", "note": null}
+Android Bundled 267ms node_modules\expo-router\entry.js (1 module)
+Android Bundled 174ms node_modules\expo-router\entry.js (1 module)
+Android Bundled 187ms node_modules\expo-router\entry.js (1 module)

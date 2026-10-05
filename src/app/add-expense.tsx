@@ -21,6 +21,11 @@ import { ButtonIcon, ButtonLabel, GlassButton } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { DEFAULT_CATEGORY_ID, type CategoryId } from '@/constants/categories';
+import { getDatabase } from '@/database/database';
+import {
+  ExpenseRepository,
+  type NewExpense,
+} from '@/database/repositories/expense-repository';
 import { borders, colors, radii, spacing, touchTarget } from '@/theme';
 import { formatInr, parseAmountToPaise, sanitizeAmountInput } from '@/utils/currency';
 import { formatFullDate, fromDateKey, toDateKey } from '@/utils/dates';
@@ -36,12 +41,15 @@ import { formatFullDate, fromDateKey, toDateKey } from '@/utils/dates';
  */
 const SAVED_FEEDBACK_MS = 1200;
 
-type ExpenseDraft = {
-  amountPaise: number;
-  category: CategoryId;
-  dateKey: string;
-  note: string | null;
-};
+/**
+ * Where the save button is in its lifecycle.
+ *
+ * One value rather than a pair of booleans, because `saved` and `saving` are not
+ * independent: the button is disabled while a write is in flight *and* after it
+ * lands, and two flags could describe states the UI has no rendering for. Every
+ * label and disabled state below is derived from this.
+ */
+type SaveState = 'idle' | 'saving' | 'saved' | 'failed';
 
 /**
  * Add Expense.
@@ -49,11 +57,10 @@ type ExpenseDraft = {
  * docs/screens.md: "Purpose: record an expense quickly", with the amount
  * autofocusing and the save action obvious. Everything below follows from that.
  *
- * Persistence is deliberately absent — docs/roadmap.md puts the database in
- * Phase 2 and entry in Phase 3, and this task asked for entry without it. The
- * draft is assembled and logged, and no `expenses` row is written. The shape it
- * logs is already the one the repository will want: whole paise, a category id,
- * a `YYYY-MM-DD` local date key, and a nullable note.
+ * The draft is written to SQLite through `ExpenseRepository`, which is the single
+ * owner of the `expenses` table. The repository takes the same `NewExpense` shape
+ * this screen assembles — whole paise, a category id, a local `YYYY-MM-DD` date
+ * key, a nullable note — so no money is ever converted to a float on the way in.
  */
 export default function AddExpenseScreen() {
   // Destructured for React Compiler stability.
@@ -72,7 +79,9 @@ export default function AddExpenseScreen() {
   const [dateKey, setDateKey] = useState(() => toDateKey(new Date()));
   const [note, setNote] = useState('');
   const [validateAmount, setValidateAmount] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [saveState, setSaveState] = useState<SaveState>('idle');
+
+  const saved = saveState === 'saved';
 
   const amountPaise = parseAmountToPaise(amountText);
   const amountProblem = amountPaise == null || amountPaise <= 0;
@@ -85,6 +94,27 @@ export default function AddExpenseScreen() {
     () => formatFullDate(fromDateKey(dateKey)),
     [dateKey],
   );
+
+  /*
+    One derivation for both, so the spoken label and the spoken hint can never
+    describe different button states. `amountProblem` is checked before 'failed'
+    deliberately: with no amount entered, that is still the thing to say.
+  */
+  const saveLabel = saved
+    ? 'Expense added'
+    : saveState === 'saving'
+      ? 'Saving expense'
+      : 'Add expense';
+
+  const saveHint = saved
+    ? 'Returning to the previous screen'
+    : saveState === 'saving'
+      ? 'Saving this expense'
+      : amountProblem
+        ? 'Enter an amount greater than zero first'
+        : saveState === 'failed'
+          ? 'The last attempt did not save. Try again'
+          : 'Saves this expense';
 
   useEffect(() => {
     return () => {
@@ -104,7 +134,7 @@ export default function AddExpenseScreen() {
     noteRef.current?.focus();
   }, []);
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     if (amountProblem) {
       setValidateAmount(true);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {
@@ -116,22 +146,44 @@ export default function AddExpenseScreen() {
       return;
     }
 
-    const draft: ExpenseDraft = {
+    const draft: NewExpense = {
       amountPaise: amountPaise as number,
       category,
       dateKey,
       note: note.trim() === '' ? null : note.trim(),
     };
 
-    // No SQLite yet. Replace with the expense repository in the database phase.
-    console.log('[add-expense] saved', draft);
+    /*
+      Set before awaiting, not after. The write crosses to the native SQLite
+      module and back, and a second tap inside that window would otherwise
+      insert the same expense twice — the button's `disabled` prop is not a
+      substitute for this, because a press that has already been dispatched is
+      not withdrawn by it.
+    */
+    setSaveState('saving');
 
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {
-      // Haptics are unavailable on web and some devices.
-    });
+    try {
+      const repository = new ExpenseRepository(await getDatabase());
+      await repository.insert(draft);
 
-    setSaved(true);
-    dismissTimer.current = setTimeout(() => back(), SAVED_FEEDBACK_MS);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {
+        // Haptics are unavailable on web and some devices.
+      });
+
+      setSaveState('saved');
+      dismissTimer.current = setTimeout(() => back(), SAVED_FEEDBACK_MS);
+    } catch (error) {
+      /*
+        The row is not in SQLite, so this must not navigate away and must not
+        claim success. `idle` rather than a retry-flavored state: the draft is
+        still in every field, so the fix is simply pressing the button again.
+      */
+      console.warn('[add-expense] could not save the expense', error);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {
+        // Haptics are unavailable on web and some devices.
+      });
+      setSaveState('failed');
+    }
   }, [amountProblem, amountPaise, back, category, dateKey, note]);
 
   const handleCancel = useCallback(() => {
@@ -247,26 +299,41 @@ export default function AddExpenseScreen() {
           </Text>
         ) : null}
 
+        {/*
+          A failed write is the one case where the screen must not move on. The
+          draft is still intact behind this message, so the copy points at the
+          only action that can fix it rather than at a retry button that would
+          need its own explanation.
+        */}
+        {saveState === 'failed' ? (
+          <Text
+            variant="caption"
+            tone="destructive"
+            center
+            accessibilityLiveRegion="assertive"
+            style={styles.savedSummary}
+            testID="save-error"
+          >
+            Could not save. Check your storage and try again.
+          </Text>
+        ) : null}
+
         <GlassButton
           block
           size="lg"
           variant="primary"
           onPress={handleSave}
-          disabled={saved}
+          // Disabled for the whole of 'saving' and 'saved': both are windows in
+          // which a further insert would duplicate a row that already exists.
+          disabled={saveState === 'saving' || saved}
           haptic={false}
-          accessibilityLabel={
-            saved ? 'Expense added' : 'Add expense'
-          }
-          accessibilityHint={
-            saved
-              ? 'Returning to the previous screen'
-              : amountProblem
-                ? 'Enter an amount greater than zero first'
-                : 'Saves this expense'
-          }
+          accessibilityLabel={saveLabel}
+          accessibilityHint={saveHint}
           testID="save-button"
         >
-          {saved ? (
+          {saveState === 'saving' ? (
+            <ButtonLabel>Saving…</ButtonLabel>
+          ) : saved ? (
             <>
               <ButtonIcon>
                 <Icon name="check" size={18} color={colors.textOnAccent} />

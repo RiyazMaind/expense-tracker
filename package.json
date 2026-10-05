@@ -42,7 +42,9 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tests/tsconfig.json",
+    "test": "node --test --import ./tests/register-ts-paths.mjs \"tests/**/*.test.ts\""
   },
   "private": true
 }

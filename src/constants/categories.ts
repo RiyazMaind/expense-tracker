@@ -57,3 +57,21 @@ export const DEFAULT_CATEGORY_ID: CategoryId = 'food';
 export function getCategory(id: CategoryId): Category {
   return categories.find((category) => category.id === id) ?? categories[categories.length - 1];
 }
+
+/**
+ * Built once at module scope — this runs on every insert, and rebuilding the set
+ * per call would be the kind of allocation that adds up in a loop
+ * (vercel-react-native-skills/rules/js-hoist-intl.md, same reasoning).
+ */
+const categoryIds: ReadonlySet<string> = new Set(categories.map((category) => category.id));
+
+/**
+ * Narrow an unvalidated string to a `CategoryId`.
+ *
+ * Needed because `expenses.category` is read back out of SQLite as plain text:
+ * the column stores whatever string was written, and TypeScript cannot know on
+ * its own that it came from this list.
+ */
+export function isCategoryId(id: string): id is CategoryId {
+  return categoryIds.has(id);
+}

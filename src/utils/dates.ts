@@ -43,6 +43,23 @@ export function fromDateKey(key: string): Date {
   return new Date(year ?? 1970, (month ?? 1) - 1, day ?? 1);
 }
 
+/**
+ * Whether `key` is a real local calendar date in `YYYY-MM-DD` form.
+ *
+ * Round-trips through `fromDateKey` instead of only testing the shape, because
+ * the shape alone accepts dates that do not exist: '2026-02-30' matches
+ * `\d{4}-\d{2}-\d{2}` but parses to 2 March, so re-encoding it gives a different
+ * key. The database guards the same invariant with a CHECK constraint; this is
+ * the version that can explain *why* an insert was rejected.
+ */
+export function isValidDateKey(key: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) {
+    return false;
+  }
+
+  return toDateKey(fromDateKey(key)) === key;
+}
+
 /** Local midnight, so comparisons never trip over a time of day. */
 export function startOfDay(date: Date): Date {
   const normalized = new Date(date);

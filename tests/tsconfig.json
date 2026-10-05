@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "ESNext",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "types": ["node"],
+    "noEmit": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    /*
+      Required because the data layer pulls in a `.tsx` module for its types:
+      `CategoryId` is defined alongside the `IconName` union. Matches
+      expo/tsconfig.base so the same files are checked the same way here as in
+      the app.
+    */
+    "jsx": "react-jsx",
+    /*
+      The `@/` alias, as the tests resolve it.
+
+      The extensions are listed because these files are checked in ESM mode —
+      `tests/package.json` declares `"type": "module"`, which is what lets Node run
+      the TypeScript tests directly. In ESM mode an extensionless substitution is
+      rejected, so the candidates are spelled out here, in the same order
+      `tests/register-ts-paths.mjs` probes them at runtime.
+    */
+    "paths": {
+      "@/*": ["../src/*.ts", "../src/*.tsx", "../src/*/index.ts"]
+    }
+  },
+  "include": ["**/*.ts"]
+}
