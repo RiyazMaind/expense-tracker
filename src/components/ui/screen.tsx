@@ -40,6 +40,14 @@ export function Screen({
     styles.content,
     { paddingTop: insets.top + spacing.lg },
     { paddingBottom: navigation.contentBottomClearance + bottomPadding },
+    /*
+      The screen is sized by its root `flex: 1` frame, so its content box only
+      reaches the full height if it claims that height too. Without this a child
+      with `flex: 1` — a virtualized list, which is the entire reason to turn
+      scrolling off — resolves its flex against an auto-height parent and
+      collapses to nothing.
+    */
+    !scroll && styles.contentFill,
     contentContainerStyle,
   ];
 
@@ -72,5 +80,8 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: spacing.lg,
     gap: spacing.lg,
+  },
+  contentFill: {
+    flex: 1,
   },
 });

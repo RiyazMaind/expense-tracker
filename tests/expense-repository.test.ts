@@ -367,3 +367,343 @@ describe('ExpenseRepository.listInRange', () => {
     assert.equal(rows[0]?.date, '2026-10-05');
   });
 });
+
+/**
+ * Paging, editing and deleting — what the history screen and the detail screen
+ * depend on. `listRecent` is built on LIMIT/OFFSET, so the tests that matter most
+ * are the ones about what happens *between* pages: a row that repeats or vanishes
+ * while scrolling is invisible to any single-page assertion.
+ */
+describe('ExpenseRepository.listRecent', () => {
+  let db: TestDatabase;
+  let repository: ExpenseRepository;
+
+  before(async () => {
+    db = createTestDatabase();
+    await runMigrations(db);
+    repository = new ExpenseRepository(db);
+
+    // Two on the same day, so the id tiebreak is exercised too: without it, the
+    // order of same-day rows is not defined and paging can skip one.
+    await repository.insert(expense({ amountPaise: 100, dateKey: '2026-10-06' }));
+    await repository.insert(expense({ amountPaise: 200, dateKey: '2026-10-06' }));
+    await repository.insert(expense({ amountPaise: 300, dateKey: '2026-10-05' }));
+    await repository.insert(expense({ amountPaise: 400, dateKey: '2026-10-04' }));
+    await repository.insert(expense({ amountPaise: 500, dateKey: '2026-10-03' }));
+  });
+
+  after(() => {
+    db.close();
+  });
+
+  it('returns the newest first', async () => {
+    const page = await repository.listRecent();
+
+    assert.deepEqual(
+      page.expenses.map((row) => row.amountMinor),
+      [200, 100, 300, 400, 500],
+    );
+  });
+
+  it('says there is more when there is more', async () => {
+    const page = await repository.listRecent({ limit: 2 });
+
+    assert.equal(page.expenses.length, 2);
+    assert.equal(page.hasMore, true);
+  });
+
+  it('says there is no more on the page that reaches the end', async () => {
+    const page = await repository.listRecent({ limit: 2, offset: 4 });
+
+    assert.deepEqual(
+      page.expenses.map((row) => row.amountMinor),
+      [500],
+    );
+    assert.equal(page.hasMore, false);
+  });
+
+  it('does not leak the extra row it reads to detect the end', async () => {
+    // The page past the end is read with one row more than asked for, so a full
+    // page must still return exactly what was requested.
+    const page = await repository.listRecent({ limit: 5 });
+
+    assert.equal(page.expenses.length, 5);
+    assert.equal(page.hasMore, false);
+  });
+
+  it('pages through every row exactly once', async () => {
+    const seen: number[] = [];
+
+    for (let offset = 0; offset < 10; offset += 2) {
+      const page: Awaited<ReturnType<ExpenseRepository['listRecent']>> =
+        await repository.listRecent({ limit: 2, offset });
+
+      seen.push(...page.expenses.map((row) => row.amountMinor));
+
+      if (!page.hasMore) {
+        break;
+      }
+    }
+
+    assert.deepEqual(seen, [200, 100, 300, 400, 500]);
+    assert.equal(new Set(seen).size, seen.length);
+  });
+
+  it('returns an empty page past the end rather than failing', async () => {
+    const page = await repository.listRecent({ offset: 99 });
+
+    assert.deepEqual(page.expenses, []);
+    assert.equal(page.hasMore, false);
+  });
+
+  it('reports an empty history as empty, not as more to load', async () => {
+    const empty = createTestDatabase();
+    await runMigrations(empty);
+    const scoped = new ExpenseRepository(empty);
+
+    const page = await scoped.listRecent();
+
+    assert.deepEqual(page, { expenses: [], hasMore: false });
+
+    empty.close();
+  });
+
+  it('clamps a nonsense page size instead of asking for everything', async () => {
+    // 0 would read nothing at all; negative would be a SQL error.
+    const one = await repository.listRecent({ limit: 0 });
+    assert.equal(one.expenses.length, 1);
+
+    const negative = await repository.listRecent({ limit: -5 });
+    assert.equal(negative.expenses.length, 1);
+
+    // A negative offset is a read from before the start, so it clamps to the top.
+    const fromTop = await repository.listRecent({ limit: 1, offset: -10 });
+    assert.equal(fromTop.expenses[0]?.amountMinor, 200);
+  });
+
+  it('agrees with listInRange about what exists', async () => {
+    const paged = await repository.listRecent();
+    const ranged = await repository.listInRange({
+      fromKey: '2026-01-01',
+      toKey: '2026-12-31',
+    });
+
+    assert.deepEqual(paged.expenses, ranged);
+  });
+});
+
+describe('ExpenseRepository.update', () => {
+  let db: TestDatabase;
+  let repository: ExpenseRepository;
+
+  before(async () => {
+    db = createTestDatabase();
+    await runMigrations(db);
+    repository = new ExpenseRepository(db);
+  });
+
+  after(() => {
+    db.close();
+  });
+
+  it('rewrites every editable field and returns the row as stored', async () => {
+    const original = await repository.insert(
+      expense({ amountPaise: 1000, category: 'food', note: 'Lunch', dateKey: '2026-10-06' }),
+    );
+
+    const updated = await repository.update(original.id, {
+      amountPaise: 4550,
+      category: 'transport',
+      note: 'Taxi',
+      dateKey: '2026-10-01',
+    });
+
+    assert.equal(updated.id, original.id);
+    assert.equal(updated.amountMinor, 4550);
+    assert.equal(updated.category, 'transport');
+    assert.equal(updated.note, 'Taxi');
+    assert.equal(updated.date, '2026-10-01');
+    assert.deepEqual(await repository.getById(original.id), updated);
+  });
+
+  it('moves the row to another day, and the totals follow it', async () => {
+    const original = await repository.insert(expense({ amountPaise: 7000, dateKey: '2026-10-06' }));
+
+    await repository.update(original.id, {
+      amountPaise: 7000,
+      category: 'food',
+      note: null,
+      dateKey: '2026-10-05',
+    });
+
+    const summary = await repository.getSummary(TODAY);
+
+    assert.equal(summary.todayPaise, 0);
+    // The 5th is inside the same week, so the week total is unchanged.
+    assert.equal(summary.weekPaise, 7000);
+  });
+
+  it('leaves created_at alone and moves updated_at forward', async () => {
+    const original = await repository.insert(expense({ amountPaise: 1000 }));
+
+    // Timestamps are milliseconds, so the update has to land in a later one.
+    await new Promise((resolve) => setTimeout(resolve, 5));
+
+    const updated = await repository.update(original.id, {
+      amountPaise: 2000,
+      category: 'food',
+      note: null,
+      dateKey: '2026-10-06',
+    });
+
+    assert.equal(updated.createdAt, original.createdAt);
+    assert.notEqual(updated.updatedAt, original.updatedAt);
+    assert.ok(
+      Date.parse(updated.updatedAt) > Date.parse(original.updatedAt),
+      `${updated.updatedAt} should be after ${original.updatedAt}`,
+    );
+  });
+
+  it('stores a cleared note as null, exactly as an insert does', async () => {
+    const original = await repository.insert(expense({ note: 'Something' }));
+
+    const updated = await repository.update(original.id, {
+      amountPaise: 1000,
+      category: 'food',
+      note: '   ',
+      dateKey: '2026-10-06',
+    });
+
+    assert.equal(updated.note, null);
+  });
+
+  it('applies the same validation an insert does', async () => {
+    const original = await repository.insert(expense());
+    const valid = {
+      amountPaise: 1000,
+      category: 'food' as const,
+      dateKey: '2026-10-06',
+      note: null,
+    };
+
+    await assert.rejects(
+      () => repository.update(original.id, { ...valid, amountPaise: 0 }),
+      /positive whole/,
+    );
+    await assert.rejects(
+      () => repository.update(original.id, { ...valid, category: 'crypto' as never }),
+      /Unknown expense category/,
+    );
+    await assert.rejects(
+      () => repository.update(original.id, { ...valid, dateKey: '2026-02-30' }),
+      /YYYY-MM-DD/,
+    );
+  });
+
+  it('leaves the row untouched when the update is rejected', async () => {
+    const original = await repository.insert(expense({ amountPaise: 1000, note: 'Keep me' }));
+
+    await assert.rejects(() =>
+      repository.update(original.id, {
+        amountPaise: -5,
+        category: 'food',
+        note: 'Lost',
+        dateKey: '2026-10-06',
+      }),
+    );
+
+    assert.deepEqual(await repository.getById(original.id), original);
+  });
+
+  it('rejects an id that is not a row, rather than reporting a silent success', async () => {
+    await assert.rejects(
+      () =>
+        repository.update(4242, {
+          amountPaise: 1000,
+          category: 'food',
+          note: null,
+          dateKey: '2026-10-06',
+        }),
+      /no such expense/,
+    );
+  });
+
+  it('rejects an unusable id before it reaches SQL', async () => {
+    for (const id of [0, -1, 1.5]) {
+      await assert.rejects(
+        () =>
+          repository.update(id, {
+            amountPaise: 1000,
+            category: 'food',
+            note: null,
+            dateKey: '2026-10-06',
+          }),
+        /positive whole number/,
+      );
+    }
+  });
+});
+
+describe('ExpenseRepository.remove', () => {
+  let db: TestDatabase;
+  let repository: ExpenseRepository;
+
+  before(async () => {
+    db = createTestDatabase();
+    await runMigrations(db);
+    repository = new ExpenseRepository(db);
+  });
+
+  after(() => {
+    db.close();
+  });
+
+  it('deletes the row and says it did', async () => {
+    const saved = await repository.insert(expense({ amountPaise: 3000 }));
+
+    assert.equal(await repository.remove(saved.id), true);
+    assert.equal(await repository.getById(saved.id), null);
+  });
+
+  it('takes the row out of the totals', async () => {
+    const first = await repository.insert(expense({ amountPaise: 1000 }));
+    await repository.insert(expense({ amountPaise: 2000 }));
+
+    assert.equal((await repository.getSummary(TODAY)).todayPaise, 3000);
+
+    await repository.remove(first.id);
+
+    const summary = await repository.getSummary(TODAY);
+
+    assert.equal(summary.todayPaise, 2000);
+    assert.equal(summary.expenseCount, 1);
+  });
+
+  it('leaves the other rows alone', async () => {
+    const first = await repository.insert(expense({ amountPaise: 100 }));
+    const second = await repository.insert(expense({ amountPaise: 200 }));
+
+    await repository.remove(first.id);
+
+    assert.equal((await repository.getById(second.id))?.amountMinor, 200);
+  });
+
+  it('reports an absent row as "nothing was removed" instead of throwing', async () => {
+    // The detail screen has to be able to tell a delete from a double-delete
+    // without treating the second one as a failure.
+    assert.equal(await repository.remove(9999), false);
+  });
+
+  it('is not repeatable', async () => {
+    const saved = await repository.insert(expense());
+
+    assert.equal(await repository.remove(saved.id), true);
+    assert.equal(await repository.remove(saved.id), false);
+  });
+
+  it('rejects an unusable id before it reaches SQL', async () => {
+    for (const id of [0, -3, 2.25]) {
+      await assert.rejects(() => repository.remove(id), /positive whole number/);
+    }
+  });
+});

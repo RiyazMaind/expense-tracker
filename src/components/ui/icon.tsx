@@ -29,6 +29,7 @@ export type IconName =
   | 'plus'
   | 'close'
   | 'check'
+  | 'trash'
   | 'calendar'
   | 'chevronLeft'
   | 'chevronRight'
@@ -84,6 +85,15 @@ const paths: Record<IconName, readonly string[]> = {
   plus: ['M12 5.6v12.8', 'M5.6 12h12.8'],
   close: ['M6.4 6.4l11.2 11.2', 'M17.6 6.4L6.4 17.6'],
   check: ['M5 12.6 9.7 17.3 19 6.6'],
+
+  // Waste bin: lid line with a raised handle, tapered can, two inner rules.
+  trash: [
+    'M4.4 6.6h15.2',
+    'M9.7 6.6V4.95a1.35 1.35 0 0 1 1.35-1.35h1.9a1.35 1.35 0 0 1 1.35 1.35V6.6',
+    'M6.3 6.6l.85 13.05a1.5 1.5 0 0 0 1.5 1.4h6.7a1.5 1.5 0 0 0 1.5-1.4l.85-13.05',
+    'M10.3 10.3v7.2',
+    'M13.7 10.3v7.2',
+  ],
 
   // Calendar: page, header rule, two hangers.
   calendar: [
@@ -212,6 +222,8 @@ const ink: Record<IconName, { x: number; y: number; width: number; height: numbe
   plus: { x: 4.6, y: 4.6, width: 14.7, height: 14.7 },
   close: { x: 5.4, y: 5.4, width: 13.1, height: 13.1 },
   check: { x: 3.8, y: 5.6, width: 16.4, height: 12.8 },
+  // Lid 4.4 to 19.6, handle top 3.6, can floor 19.65 — centred on x 12.
+  trash: { x: 3.5, y: 2.7, width: 17.0, height: 17.9 },
   // Page 3.6 to 20.4 by 4.6 to 19.8; hangers reach the highest.
   calendar: { x: 2.6, y: 3.6, width: 18.8, height: 17.8 },
   chevronLeft: { x: 7.4, y: 4.6, width: 9.2, height: 14.8 },

@@ -63,6 +63,25 @@ type SummaryRow = {
   expense_count: number;
 };
 
+/** One page of history, plus whether a further page exists behind it. */
+export type ExpensePage = {
+  expenses: Expense[];
+  /**
+   * Whether more rows may follow this page.
+   *
+   * Computed by reading one row past the page rather than by comparing the page
+   * size to the limit, so "the end of the list" is a fact about the database
+   * instead of an assumption about how full the last page happened to be.
+   */
+  hasMore: boolean;
+};
+
+/** Rows per page in the expense history. Roughly two screens of history. */
+export const EXPENSE_PAGE_SIZE = 30;
+
+/** Ceiling on a caller-supplied page size, so a bad limit cannot pull the whole table. */
+const MAX_PAGE_SIZE = 200;
+
 export class ExpenseRepository {
   private readonly db: QueryableDatabase;
 
@@ -78,7 +97,7 @@ export class ExpenseRepository {
    * holds, instead of a copy that could drift from the table.
    */
   async insert(input: NewExpense): Promise<Expense> {
-    assertInsertable(input);
+    assertValidExpense(input);
 
     /*
       `created_at` and `updated_at` are instants, not calendar days, so UTC is the
@@ -179,6 +198,101 @@ export class ExpenseRepository {
 
     return rows.map(toExpense);
   }
+
+  /**
+   * One page of history, newest first.
+   *
+   * Paged rather than returned whole, because docs/architecture.md asks for
+   * "query only required data" on large histories and an unbounded read would
+   * grow without limit however long the app is used. The history screen walks
+   * pages as it scrolls, so a user with a thousand expenses pays for the first
+   * screenful rather than for all of it.
+   *
+   * Ordering is `date DESC, id DESC`: the index on `date` serves the sort, and
+   * `id` breaks ties between expenses filed on the same day so paging cannot
+   * repeat or skip a row when two entries share a date.
+   */
+  async listRecent(options: { limit?: number; offset?: number } = {}): Promise<ExpensePage> {
+    const limit = clampPageSize(options.limit);
+    const offset = Math.max(0, Math.trunc(options.offset ?? 0));
+
+    // One row beyond the page is requested purely to answer "is there more?".
+    const rows = await this.db.getAllAsync<ExpenseRow>(
+      `SELECT ${EXPENSE_COLUMNS}
+       FROM expenses
+       ORDER BY date DESC, id DESC
+       LIMIT ? OFFSET ?`,
+      [limit + 1, offset],
+    );
+
+    const hasMore = rows.length > limit;
+
+    return {
+      expenses: hasMore ? rows.slice(0, limit).map(toExpense) : rows.map(toExpense),
+      hasMore,
+    };
+  }
+
+  /**
+   * Overwrite every editable field of one expense and return it as stored.
+   *
+   * Takes the same `NewExpense` shape as `insert` rather than a partial patch:
+   * the edit screen edits all four fields at once, so a partial update would
+   * only add a way to leave a field unintentionally unset.
+   *
+   * `created_at` is not in the statement. It records when the expense was first
+   * recorded, which editing must not rewrite.
+   */
+  async update(id: number, input: NewExpense): Promise<Expense> {
+    assertValidExpense(input);
+    assertValidId(id);
+
+    const timestamp = new Date().toISOString();
+
+    const result = await this.db.runAsync(
+      `UPDATE expenses
+       SET amount_minor = ?, category = ?, note = ?, date = ?, updated_at = ?
+       WHERE id = ?`,
+      [
+        input.amountPaise,
+        input.category,
+        normalizeNote(input.note),
+        input.dateKey,
+        timestamp,
+        id,
+      ],
+    );
+
+    if (result.changes === 0) {
+      // The row is gone — deleted on another screen, or never existed. Silently
+      // succeeding would leave the screen claiming to have saved an edit to
+      // nothing.
+      throw new Error(`Cannot update expense ${id}: no such expense.`);
+    }
+
+    const updated = await this.getById(id);
+
+    if (updated == null) {
+      throw new Error(`Expense ${id} was updated but could not be read back.`);
+    }
+
+    return updated;
+  }
+
+  /**
+   * Delete one expense.
+   *
+   * Returns whether a row was actually removed, so a caller can tell "deleted"
+   * from "it was already gone" and avoid telling the user their deletion
+   * succeeded when nothing was there.
+   */
+  async remove(id: number): Promise<boolean> {
+    assertValidId(id);
+
+    const result = await this.db.runAsync('DELETE FROM expenses WHERE id = ?', [id]);
+
+    return result.changes > 0;
+  }
 }
 
 /**
@@ -195,15 +309,18 @@ function normalizeNote(note: string | null): string | null {
 }
 
 /**
- * Reject an insert that would violate the table's own invariants.
+ * Reject an expense that would violate the table's own invariants.
  *
  * The schema already enforces the positive amount and the date format with CHECK
  * constraints. Checking here as well is not duplication for its own sake — SQLite
  * reports a constraint failure as a generic error, while these messages name the
  * field that was wrong, which is the difference between a debuggable failure and
  * a mystery one.
+ *
+ * Shared by `insert` and `update`: an edit that could produce a row the insert
+ * path would have rejected is not an edit, it is a corruption.
  */
-function assertInsertable(input: NewExpense): void {
+function assertValidExpense(input: NewExpense): void {
   if (!Number.isSafeInteger(input.amountPaise) || input.amountPaise <= 0) {
     throw new Error(
       `Expense amount must be a positive whole number of paise, received ${input.amountPaise}`,
@@ -217,6 +334,22 @@ function assertInsertable(input: NewExpense): void {
   if (!isValidDateKey(input.dateKey)) {
     throw new Error(`Expense date must be a local YYYY-MM-DD date, received ${input.dateKey}`);
   }
+}
+
+/** `id` comes from a route parameter, so it is checked before it reaches SQL. */
+function assertValidId(id: number): void {
+  if (!Number.isSafeInteger(id) || id <= 0) {
+    throw new Error(`Expense id must be a positive whole number, received ${id}`);
+  }
+}
+
+/** Keep a requested page size inside the bounds the screen actually wants. */
+function clampPageSize(limit: number | undefined): number {
+  if (limit == null) {
+    return EXPENSE_PAGE_SIZE;
+  }
+
+  return Math.min(MAX_PAGE_SIZE, Math.max(1, Math.trunc(limit)));
 }
 
 /**
