@@ -50,7 +50,7 @@ export default function HomeScreen() {
           <GlassButton
             accessibilityLabel="Add expense"
             accessibilityHint="Opens the add expense screen"
-            onPress={() => router.push('/expenses')}
+            onPress={() => router.push('/add-expense')}
             testID="empty-home-add"
           >
             <ButtonLabel>Add expense</ButtonLabel>

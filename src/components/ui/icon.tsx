@@ -27,7 +27,20 @@ export type IconName =
   | 'wallet'
   | 'sliders'
   | 'plus'
-  | 'close';
+  | 'close'
+  | 'check'
+  | 'calendar'
+  | 'chevronLeft'
+  | 'chevronRight'
+  // Expense categories (docs/product.md).
+  | 'food'
+  | 'transport'
+  | 'shopping'
+  | 'entertainment'
+  | 'health'
+  | 'education'
+  | 'groceries'
+  | 'other';
 
 /** The grid every path is authored on. */
 const GRID = 24;
@@ -70,16 +83,94 @@ const paths: Record<IconName, readonly string[]> = {
 
   plus: ['M12 5.6v12.8', 'M5.6 12h12.8'],
   close: ['M6.4 6.4l11.2 11.2', 'M17.6 6.4L6.4 17.6'],
+  check: ['M5 12.6 9.7 17.3 19 6.6'],
+
+  // Calendar: page, header rule, two hangers.
+  calendar: [
+    'M4.6 6.6h14.8a1 1 0 0 1 1 1v11.2a1 1 0 0 1-1 1H4.6a1 1 0 0 1-1-1V7.6a1 1 0 0 1 1-1z',
+    'M3.6 10.6h16.8',
+    'M8.2 4.6v3.4',
+    'M15.8 4.6v3.4',
+  ],
+
+  chevronLeft: ['M14.8 5.6 8.4 12l6.4 6.4'],
+  chevronRight: ['M9.2 5.6 15.6 12l-6.4 6.4'],
+
+  // Fork and knife: three tines into a shared stem, beside a rounded blade.
+  food: [
+    'M8.6 3.9v4.5',
+    'M11 3.9v4.5',
+    'M13.4 3.9v4.5',
+    'M8.6 8.4h4.8',
+    'M11 8.4v11.7',
+    'M16.3 3.9c1.8 1.5 2.5 3.9 2.5 6.1 0 1.7-1 2.6-2.5 2.6v8.5',
+  ],
+
+  // Car in side profile: roofline and body, two wheels below the sill.
+  transport: [
+    'M3.6 16.8v-4.4a1.5 1.5 0 0 1 .34-.9l2.42-3.22a2 2 0 0 1 1.6-.78h8.28a2 2 0 0 1 1.6.78l2.42 3.22a1.5 1.5 0 0 1 .34.9v4.4',
+    'M3.6 16.8h16.8',
+    'M6.6 16.8v1.7',
+    'M17.4 16.8v1.7',
+  ],
+
+  // Shopping bag: tapered body, one arched handle.
+  shopping: [
+    'M5.7 8h12.6l-.95 11.2a1.5 1.5 0 0 1-1.5 1.3H8.15a1.5 1.5 0 0 1-1.5-1.3z',
+    'M8.9 8.4V6.7a3.1 3.1 0 0 1 6.2 0v1.7',
+  ],
+
+  // Ring with a play triangle.
+  entertainment: [
+    'M12 3.9a8.1 8.1 0 1 0 0 16.2 8.1 8.1 0 0 0 0-16.2',
+    'M10.2 8.7 15.6 12l-5.4 3.3z',
+  ],
+
+  // Heart, drawn as one continuous outline.
+  health: [
+    'M12 20.2S3.9 15.5 3.9 9.8A4.65 4.65 0 0 1 12 6.7a4.65 4.65 0 0 1 8.1 3.1c0 5.7-8.1 10.4-8.1 10.4z',
+  ],
+
+  // Open book: two pages meeting at a spine.
+  education: [
+    'M12 6.9v12.5',
+    'M3.9 6.1a1.4 1.4 0 0 1 1.4-1.4h4.3A2.4 2.4 0 0 1 12 6.9v12.5a1.9 1.9 0 0 0-1.9-1.4H5.3a1.4 1.4 0 0 1-1.4-1.4z',
+    'M20.1 6.1a1.4 1.4 0 0 0-1.4-1.4h-4.3A2.4 2.4 0 0 0 12 6.9v12.5a1.9 1.9 0 0 1 1.9-1.4h4.9a1.4 1.4 0 0 0 1.4-1.4z',
+  ],
+
+  // Basket: tapered body with two splayed handle rails.
+  groceries: [
+    'M3.7 9.5h16.6l-1.6 8.9a1.7 1.7 0 0 1-1.66 1.3H6.96a1.7 1.7 0 0 1-1.66-1.3z',
+    'M8.5 9.5 10.7 3.9',
+    'M15.5 9.5 13.3 3.9',
+  ],
+
+  // Ring only — the three dots are drawn separately, see `dots`.
+  other: ['M12 3.9a8.1 8.1 0 1 0 0 16.2 8.1 8.1 0 0 0 0-16.2'],
 };
 
 /**
- * Knob positions for the sliders glyph, expressed as coordinates so the knobs
- * are laid out as part of the same stroke system rather than as stray dots.
+ * Round dots drawn as part of a glyph's stroke system rather than as stray
+ * decoration, expressed as coordinates on the same grid as the paths.
+ *
+ * A zero-length segment with a round line cap renders as a clean dot at exactly
+ * the stroke weight — the same trick `sliders` already used for its knobs. It
+ * is generalised here into a per-glyph list so `other` can be a proper
+ * three-dot "more" mark drawn in the house style, rather than a borrowed glyph
+ * or an emoji. `weight` scales the dot against the stroke; the sliders' knobs
+ * keep their original 2.1.
  */
-const sliderKnobs = [
-  { cx: 9.4, cy: 7.4 },
-  { cx: 14.6, cy: 16.6 },
-] as const;
+const dots: Partial<Record<IconName, readonly { x: number; y: number; weight: number }[]>> = {
+  sliders: [
+    { x: 9.4, y: 7.4, weight: 2.1 },
+    { x: 14.6, y: 16.6, weight: 2.1 },
+  ],
+  other: [
+    { x: 8.3, y: 12, weight: 1.5 },
+    { x: 12, y: 12, weight: 1.5 },
+    { x: 15.7, y: 12, weight: 1.5 },
+  ],
+};
 
 /**
  * Ink box of each glyph in grid units, stroke included: x/y is the top-left of
@@ -120,6 +211,23 @@ const ink: Record<IconName, { x: number; y: number; width: number; height: numbe
   sliders: { x: 3.8, y: 5.9, width: 18.3, height: 12.3 },
   plus: { x: 4.6, y: 4.6, width: 14.7, height: 14.7 },
   close: { x: 5.4, y: 5.4, width: 13.1, height: 13.1 },
+  check: { x: 3.8, y: 5.6, width: 16.4, height: 12.8 },
+  // Page 3.6 to 20.4 by 4.6 to 19.8; hangers reach the highest.
+  calendar: { x: 2.6, y: 3.6, width: 18.8, height: 17.8 },
+  chevronLeft: { x: 7.4, y: 4.6, width: 9.2, height: 14.8 },
+  chevronRight: { x: 7.4, y: 4.6, width: 9.2, height: 14.8 },
+  // Tines 8.6 to 13.4 and blade to 18.8, stem to 20.1 — tall and narrow.
+  food: { x: 7.6, y: 2.9, width: 12.2, height: 18.2 },
+  // Roof 6.4 to wheels 19.4, nose 3.6 to tail 20.4 — wide and low.
+  transport: { x: 2.6, y: 6.4, width: 18.8, height: 13.1 },
+  // Handle arc peaks at 3.6, bag floor at 20.5.
+  shopping: { x: 4.7, y: 2.6, width: 14.6, height: 18.9 },
+  // Ring 3.9 to 20.1; the triangle sits inside it.
+  entertainment: { x: 2.9, y: 2.9, width: 18.2, height: 18.2 },
+  health: { x: 2.9, y: 5.7, width: 18.2, height: 15.5 },
+  education: { x: 2.9, y: 3.7, width: 18.2, height: 16.7 },
+  groceries: { x: 2.7, y: 2.9, width: 18.6, height: 17.8 },
+  other: { x: 2.9, y: 2.9, width: 18.2, height: 18.2 },
 };
 
 /**
@@ -240,19 +348,17 @@ export function Icon({
           />
         ))}
 
-        {name === 'sliders'
-          ? sliderKnobs.map((knob) => (
-              <Path
-                key={`${knob.cx}-${knob.cy}`}
-                // A zero-length round-capped segment renders as a clean dot on
-                // the track, matching the stroke weight exactly.
-                d={`M${knob.cx} ${knob.cy}h0`}
-                stroke={color}
-                strokeWidth={gridStroke * 2.1}
-                strokeLinecap="round"
-              />
-            ))
-          : null}
+        {dots[name]?.map((dot) => (
+          <Path
+            key={`${dot.x}-${dot.y}`}
+            // A zero-length round-capped segment renders as a clean dot on the
+            // track, matching the stroke weight exactly.
+            d={`M${dot.x} ${dot.y}h0`}
+            stroke={color}
+            strokeWidth={gridStroke * dot.weight}
+            strokeLinecap="round"
+          />
+        ))}
       </Svg>
     </View>
   );

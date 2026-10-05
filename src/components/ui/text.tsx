@@ -26,8 +26,14 @@ export type TextProps = {
   style?: StyleProp<TextStyle>;
   children?: React.ReactNode;
   /** Forwarded accessibility props. */
-  accessibilityRole?: 'header' | 'text';
+  accessibilityRole?: 'header' | 'text' | 'alert';
   accessibilityLabel?: string;
+  /**
+   * Announce changes to assistive tech without moving focus — used for
+   * validation messages and save confirmations, which are meaningful only when
+   * spoken and would otherwise be silent.
+   */
+  accessibilityLiveRegion?: 'none' | 'polite' | 'assertive';
   testID?: string;
   numberOfLines?: number;
   ellipsizeMode?: 'head' | 'middle' | 'tail' | 'clip';
@@ -51,6 +57,7 @@ export function Text({
   children,
   accessibilityRole,
   accessibilityLabel,
+  accessibilityLiveRegion,
   testID,
   numberOfLines,
   ellipsizeMode,
@@ -61,6 +68,7 @@ export function Text({
       testID={testID}
       accessibilityRole={accessibilityRole}
       accessibilityLabel={accessibilityLabel}
+      accessibilityLiveRegion={accessibilityLiveRegion}
       numberOfLines={numberOfLines}
       ellipsizeMode={ellipsizeMode}
       selectable={selectable}

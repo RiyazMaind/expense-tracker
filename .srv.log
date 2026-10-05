@@ -847,3 +847,40 @@ Call Stack
     at TypeScriptParserMixin.parseExprOps (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10930:23)
     at TypeScriptParserMixin.parseMaybeConditional (C:\Users\DboxAdmin\skill_projects\expense-tracker\node_modules\@babel\parser\lib\index.js:10907:23)
 Android Bundled 224ms node_modules\expo-router\entry.js (1 module)
+Android Bundled 3145ms node_modules\expo-router\entry.js (1 module)
+Android Bundled 145ms node_modules\expo-router\entry.js (1 module)
+ ERROR  [ReferenceError: Property 'cellSize' doesn't exist] 
+
+Code: date-picker.tsx
+[0m [90m 275 |[39m             [33m<[39m[33mView[39m style[33m=[39m{styles[33m.[39mweekdayRow}[33m>[39m
+ [90m 276 |[39m               {[33mWEEKDAY_INITIALS[39m[33m.[39mmap((initial[33m,[39m index) [33m=>[39m (
+[31m[1m>[22m[39m[90m 277 |[39m                 [33m<[39m[33mView[39m key[33m=[39m{[32m`${initial}-${index}`[39m} style[33m=[39m{{ width[33m:[39m cellSize }}[33m>[39m
+ [90m     |[39m                                                                   [31m[1m^[22m[39m
+ [90m 278 |[39m                   [33m<[39m[33mText[39m variant[33m=[39m[32m"micro"[39m tone[33m=[39m[32m"tertiary"[39m center[33m>[39m
+ [90m 279 |[39m                     {initial}
+ [90m 280 |[39m                   [33m<[39m[33m/[39m[33mText[39m[33m>[39m[0m
+Call Stack
+  WEEKDAY_INITIALS.map$argument_0 (src\components\expenses\date-picker.tsx:277:67)
+  CalendarSheet (src\components\expenses\date-picker.tsx:276:36) 
+
+Code: date-picker.tsx
+[0m [90m 144 |[39m           handleSelect(key)[33m;[39m
+ [90m 145 |[39m           setCalendarOpen([36mfalse[39m)[33m;[39m
+[31m[1m>[22m[39m[90m 146 |[39m         }}
+ [90m     |[39m          [31m[1m^[22m[39m
+ [90m 147 |[39m         todayKey[33m=[39m{todayKey}
+ [90m 148 |[39m       [33m/[39m[33m>[39m
+ [90m 149 |[39m     [33m<[39m[33m/[39m[33mView[39m[33m>[39m[0m
+Call Stack
+  DatePicker (src\components\expenses\date-picker.tsx:146:10)
+  AddExpenseScreen (src\app\add-expense.tsx:196:11)
+  RootLayout (src\app\_layout.tsx:50:13)
+Android Bundled 136ms node_modules\expo-router\entry.js (1 module)
+Android Bundled 135ms node_modules\expo-router\entry.js (1 module)
+ LOG  [add-expense] saved {"amountPaise": 123450, "category": "food", "dateKey": "2026-10-06", "note": null}
+ LOG  [add-expense] saved {"amountPaise": 4800, "category": "food", "dateKey": "2026-10-06", "note": null}
+ LOG  [add-expense] saved {"amountPaise": 800, "category": "food", "dateKey": "2026-10-06", "note": null}
+ LOG  [add-expense] saved {"amountPaise": 800, "category": "food", "dateKey": "2026-10-06", "note": null}
+ LOG  [add-expense] saved {"amountPaise": 5050, "category": "food", "dateKey": "2026-10-04", "note": null}
+Android Bundled 192ms node_modules\expo-router\entry.js (1 module)
+ LOG  [add-expense] saved {"amountPaise": 5000, "category": "transport", "dateKey": "2026-10-06", "note": null}
