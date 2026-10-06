@@ -82,7 +82,10 @@ export function AmountField({
             placeholderTextColor={colors.textTertiary}
             // Focus immediately — docs/screens.md asks for it explicitly.
             autoFocus
-            selectTextOnFocus
+            // Deliberately no `selectTextOnFocus`: it selected the whole
+            // amount every time the field was refocused, so the next digit
+            // typed replaced the first one and the entry had to be retyped.
+            // The cursor simply lands where the user taps.
             maxLength={MAX_RUPEE_DIGITS + 1 + MAX_DECIMAL_DIGITS}
             returnKeyType="done"
             blurOnSubmit
