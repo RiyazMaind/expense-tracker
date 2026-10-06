@@ -17,13 +17,27 @@ export type TabDefinition = {
   icon: IconName;
 };
 
-export const tabs: readonly TabDefinition[] = [
-  { name: 'index', href: '/', label: 'Home', icon: 'home' },
-  { name: 'expenses', href: '/expenses', label: 'Expenses', icon: 'receipt' },
-  { name: 'analytics', href: '/analytics', label: 'Analytics', icon: 'chart' },
-  { name: 'budget', href: '/budget', label: 'Budget', icon: 'wallet' },
-  { name: 'settings', href: '/settings', label: 'Settings', icon: 'sliders' },
-];
+/** Home — the left-hand tab. */
+export const homeTab: TabDefinition = { name: 'index', href: '/', label: 'Home', icon: 'home' };
+
+/** Expenses — the right-hand tab. */
+export const expensesTab: TabDefinition = {
+  name: 'expenses',
+  href: '/expenses',
+  label: 'Expenses',
+  icon: 'receipt',
+};
+
+/**
+ * The bar's tabs, left to right.
+ *
+ * Only these two navigation destinations are tabs. Add is not one — it pushes a
+ * route rather than switching screens — and Analytics, Budget and Settings left
+ * the bar for the Home link, the Settings screen and the header icon
+ * respectively. `(tabs)/_layout.tsx` lays the two tabs out on the outer thirds
+ * with the Add action centred in the middle third.
+ */
+export const tabs: readonly [TabDefinition, TabDefinition] = [homeTab, expensesTab];
 
 /**
  * The visual half of the floating glass bottom navigation: a blurred glass pill
@@ -63,20 +77,21 @@ export function GlassNavBar({ style }: { style: StyleProp<ViewStyle> }) {
  *
  * Deliberately local to this component rather than added to `navigation` in the
  * theme, because these describe this one bar's internal rhythm: they are tuned
- * against five tabs on a 360dp screen, and nothing else in the app needs them.
+ * against two tabs centred in the outer thirds with the Add action between them
+ * on a 360dp screen, and nothing else in the app needs them.
  *
- * - `HEIGHT` is 54, down from 56. The content block is 37 (20 icon + 3 gap +
- *   13 label), so a 54pt bar still leaves 8.5pt of glass above and below the
- *   content rather than the content filling it edge to edge.
+ * - `HEIGHT` is 52. A tab's content block is 35 (19 icon + 3 gap + 13 label), so
+ *   the bar leaves ~8.5pt of glass above and below it — premium, not cramped —
+ *   while staying under the 56 a native bar uses.
  * - `HORIZONTAL_MARGIN` of 14 gives the bar a deliberate float off the screen
- *   edges while still leaving 66.4pt per tab.
+ *   edges while still leaving each outer third wide enough for its label.
  * - `ICON_LABEL_GAP` of 3 is what "tight but not cramped" looks like: at 5 the
  *   measured gap between the icon's ink and the label's glyph was 9pt, which
  *   read as two separate elements rather than one tab.
  */
-const HEIGHT = 54;
+const HEIGHT = 52;
 const HORIZONTAL_MARGIN = 14;
-const ICON_SIZE = 20;
+const ICON_SIZE = 19;
 const ICON_LABEL_GAP = 3;
 
 /** Positioning for both the glass surface and the transparent `TabList`. */

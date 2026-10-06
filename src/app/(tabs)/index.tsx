@@ -1,17 +1,18 @@
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { StatTile } from '@/components/dashboard/stat-tile';
 import { GlassCard } from '@/components/glass/glass-card';
-import { ButtonIcon, ButtonLabel, GlassButton } from '@/components/ui/button';
+import { ButtonLabel, GlassButton } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Icon } from '@/components/ui/icon';
 import { Screen } from '@/components/ui/screen';
 import { ScreenHeader } from '@/components/ui/screen-header';
+import { SettingsIconButton } from '@/components/ui/settings-icon-button';
 import { Text } from '@/components/ui/text';
 import { useExpenseStore } from '@/store/expenseStore';
-import { colors, spacing } from '@/theme';
+import { colors, spacing, touchTarget } from '@/theme';
 import { formatInr } from '@/utils/currency';
 
 /**
@@ -50,27 +51,10 @@ export default function HomeScreen() {
         title="Home"
         subtitle="Your spending at a glance"
         /*
-          The app's primary action, so it cannot live only inside the empty
-          state: that unmounts on the first expense and would strand the user
-          with no way to record a second one. Solid rather than glass because
-          docs/design-system.md requires the Add Expense action to stay
-          immediately recognizable.
+          Adding lives in the centre of the tab bar; this slot carries the
+          Settings shortcut instead.
         */
-        action={
-          <GlassButton
-            accessibilityLabel="Add expense"
-            accessibilityHint="Opens the add expense screen"
-            onPress={() => router.push('/add-expense')}
-            size="sm"
-            variant="primary"
-            testID="home-add"
-          >
-            <ButtonIcon>
-              <Icon name="plus" size={18} color={colors.textOnAccent} />
-            </ButtonIcon>
-            <ButtonLabel>Add</ButtonLabel>
-          </GlassButton>
-        }
+        action={<SettingsIconButton testID="home-settings" />}
       />
 
       <GlassCard testID="card-today" padded={false}>
@@ -96,6 +80,26 @@ export default function HomeScreen() {
           testID="tile-month"
         />
       </View>
+
+      {/*
+        Analytics is no longer a tab, so Home carries its door. The row reads
+        as a question answered rather than a link label: "Daily spending,
+        categories and trends".
+      */}
+      <Pressable
+        testID="home-analytics-link"
+        accessibilityRole="button"
+        accessibilityLabel="Open analytics"
+        accessibilityHint="Shows daily spending, categories and trends"
+        onPress={() => router.push('/analytics')}
+        style={styles.analyticsLink}
+      >
+        <Icon name="chart" size={18} color={colors.accent} />
+        <Text variant="body" tone="secondary" style={styles.analyticsLinkLabel}>
+          Daily spending, categories & trends
+        </Text>
+        <Icon name="chevronRight" size={16} color={colors.textTertiary} />
+      </Pressable>
 
       {/*
         Driven by the all-time count rather than by today's figure: someone who
@@ -134,5 +138,15 @@ const styles = StyleSheet.create({
   tiles: {
     flexDirection: 'row',
     gap: spacing.md,
+  },
+  analyticsLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.sm,
+    minHeight: touchTarget.min,
+  },
+  analyticsLinkLabel: {
+    flex: 1,
   },
 });

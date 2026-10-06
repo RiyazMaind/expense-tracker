@@ -1,20 +1,21 @@
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
 import { CategoryBreakdown } from '@/components/analytics/category-breakdown';
 import { DailyTrendChart } from '@/components/analytics/daily-trend-chart';
 import { TotalsHero } from '@/components/analytics/totals-hero';
 import { StatTile } from '@/components/dashboard/stat-tile';
 import { GlassCard } from '@/components/glass/glass-card';
-import { ButtonIcon, ButtonLabel, GlassButton } from '@/components/ui/button';
+import { GlassSurface } from '@/components/glass/glass-surface';
+import { ButtonLabel, GlassButton } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Icon } from '@/components/ui/icon';
 import { Screen } from '@/components/ui/screen';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { getDatabase } from '@/database/database';
 import { AnalyticsRepository } from '@/database/repositories/analytics-repository';
-import { colors, spacing } from '@/theme';
+import { colors, radii, spacing } from '@/theme';
 import {
   buildAnalyticsReport,
   resolveAnalyticsPeriods,
@@ -136,24 +137,30 @@ export default function AnalyticsScreen() {
         title="Analytics"
         subtitle="Understand spending patterns"
         /*
-          The same always-present Add action Home and Expenses carry. The empty
-          state below is the other way in, but it unmounts on the first expense,
-          which would leave no way to log another from this screen.
+          Settings used to be reachable from this slot as a text "Add" button.
+          Add Expense now lives at the centre of the tab bar, and Settings sits
+          here instead — a sliders icon, not a text button.
         */
         action={
-          <GlassButton
-            accessibilityLabel="Add expense"
-            accessibilityHint="Opens the add expense screen"
-            onPress={addExpense}
-            size="sm"
-            variant="primary"
-            testID="analytics-add"
+          <Pressable
+            testID="analytics-settings"
+            accessibilityRole="button"
+            accessibilityLabel="Open settings"
+            accessibilityHint="Opens the settings screen"
+            onPress={() => router.push('/settings')}
+            hitSlop={8}
           >
-            <ButtonIcon>
-              <Icon name="plus" size={18} color={colors.textOnAccent} />
-            </ButtonIcon>
-            <ButtonLabel>Add</ButtonLabel>
-          </GlassButton>
+            <GlassSurface
+              level="default"
+              borderLevel="subtle"
+              radius={radii.pill}
+              shadow="sm"
+              highlighted
+              style={styles.settingsButton}
+            >
+              <Icon name="sliders" size={18} color={colors.text} testID="analytics-settings-icon" />
+            </GlassSurface>
+          </Pressable>
         }
       />
 
@@ -282,5 +289,11 @@ const styles = StyleSheet.create({
   tiles: {
     flexDirection: 'row',
     gap: spacing.md,
+  },
+  settingsButton: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

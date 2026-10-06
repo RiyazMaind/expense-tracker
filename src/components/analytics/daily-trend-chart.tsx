@@ -17,8 +17,14 @@ export type DailyTrendChartProps = {
   testID?: string;
 };
 
-/** Plot area height in points. Sized so a column is readable at 360dp. */
-const PLOT_HEIGHT = 96;
+/** Plot area height in points: amount row, bars and weekly ticks. */
+const PLOT_HEIGHT = 104;
+
+/** Date ticks land on the 1st, 8th, 15th, 22nd and 29th — a weekly grid that never drifts. */
+const TICK_STRIDE = 7;
+
+/** Bar fill for ordinary days. Muted so the busiest day owns the accent. */
+const BAR_QUIET = 'rgba(108, 123, 255, 0.38)';
 
 /**
  * The daily spending trend, as columns.
@@ -34,7 +40,8 @@ const PLOT_HEIGHT = 96;
  * run of quiet days legible: the days are visibly *there* at near-zero height,
  * instead of leaving holes in the chart that read as missing data. Bar heights
  * stay strictly proportional to the amounts, so the track aids reading without
- * distorting anything.
+ * distorting anything. The busiest day owns the full accent and an amount label;
+ * every other day sits back in a muted accent so the peak reads first.
  */
 export function DailyTrendChart({
   periodLabel,
@@ -44,8 +51,6 @@ export function DailyTrendChart({
   daysWithSpending,
   testID,
 }: DailyTrendChartProps) {
-  const axisLabels = buildAxisLabels(days);
-
   const spokenSummary = buildSpokenSummary({
     periodLabel,
     days,
@@ -69,68 +74,85 @@ export function DailyTrendChart({
         accessibilityLabel={spokenSummary}
         testID="analytics-trend"
       >
-        {days.map((day) => (
-          <View
-            key={day.dateKey}
-            style={styles.column}
-            testID={`analytics-trend-day-${day.dayOfMonth}`}
-          >
-            <View style={styles.track}>
-              {day.totalPaise > 0 ? (
-                <View
-                  style={[styles.bar, { height: `${Math.round(day.height * 100)}%` }]}
-                  testID={`analytics-trend-bar-${day.dayOfMonth}`}
-                />
-              ) : null}
+        {days.map((day) => {
+          const isBusiest = busiestDay != null && day.dateKey === busiestDay.dateKey;
+
+          return (
+            <View
+              key={day.dateKey}
+              style={styles.column}
+              testID={`analytics-trend-day-${day.dayOfMonth}`}
+            >
+              {/*
+                The slot reserves the height whether or not this day carries
+                the amount, so the bars in every column share one baseline
+                even before the label appears.
+              */}
+              <View style={styles.peakSlot}>
+                {isBusiest ? (
+                  <Text
+                    variant="micro"
+                    tone="accent"
+                    tabular
+                    style={styles.peakLabel}
+                    numberOfLines={1}
+                    ellipsizeMode="clip"
+                    testID="analytics-trend-peak"
+                  >
+                    {formatInr(day.totalPaise)}
+                  </Text>
+                ) : null}
+              </View>
+
+              <View style={styles.trackArea}>
+                <View style={styles.track}>
+                  {day.totalPaise > 0 ? (
+                    <View
+                      style={[
+                        styles.bar,
+                        isBusiest ? styles.barPeak : styles.barQuiet,
+                        // 2% floor: a day whose share rounds to 0% still has to
+                        // leave a hairline, or "some activity" reads as "none".
+                        { height: `${Math.max(2, Math.round(day.height * 100))}%` },
+                      ]}
+                      testID={`analytics-trend-bar-${day.dayOfMonth}`}
+                    />
+                  ) : null}
+                </View>
+              </View>
+
+              {/*
+                Weekly ticks under the plot: a two-digit day number is wider than
+                a column, so every column keeps an oversized, centred label and
+                only the weekly ones have ink. Labelling all 31 would overlap;
+                labelling only first/middle/last would hide where "mid-month"
+                sits after the window clips to today.
+              */}
+              <Text
+                variant="micro"
+                tone={isBusiest ? 'accent' : 'tertiary'}
+                tabular
+                style={[styles.tick, isBusiest && styles.tickPeak]}
+                numberOfLines={1}
+                ellipsizeMode="clip"
+              >
+                {(day.dayOfMonth - 1) % TICK_STRIDE === 0 ? String(day.dayOfMonth) : ''}
+              </Text>
             </View>
-          </View>
-        ))}
+          );
+        })}
       </View>
 
-      <View
-        style={styles.axis}
-        accessible={false}
-        importantForAccessibility="no-hide-descendants"
-        accessibilityElementsHidden
+      <Text
+        variant="caption"
+        tone="secondary"
+        style={styles.footnote}
+        testID="analytics-busiest"
       >
-        {axisLabels.map((label) => (
-          <Text
-            key={label}
-            variant="micro"
-            tone="tertiary"
-            tabular
-            style={styles.axisLabel}
-          >
-            {label}
-          </Text>
-        ))}
-      </View>
-
-      <Text variant="caption" tone="secondary" style={styles.footnote} testID="analytics-busiest">
         {busiestDaySummary(busiestDay)}
       </Text>
     </GlassCard>
   );
-}
-
-/**
- * Three numbers under the plot: the first day, the middle and the last.
- *
- * Labelling every column would be unreadable at 360dp — a column is about 9pt
- * wide and a two-digit day number is wider than that — and labelling every
- * seventh day drifts out of alignment with the columns as the month length
- * changes. Three fixed positions stay honest at every month length.
- */
-function buildAxisLabels(days: AnalyticsReport['days']): string[] {
-  if (days.length === 0) {
-    return [];
-  }
-
-  const first = String(days[0].dayOfMonth);
-  const last = String(days[days.length - 1].dayOfMonth);
-  const middle = String(days[Math.floor((days.length - 1) / 2)].dayOfMonth);
-
-  return middle === first || middle === last ? [first, last] : [first, middle, last];
 }
 
 /** The busiest-day line. Falls back to plain copy when there is no spending. */
@@ -176,7 +198,7 @@ const styles = StyleSheet.create({
   plot: {
     height: PLOT_HEIGHT,
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    alignItems: 'stretch',
     justifyContent: 'center',
     gap: 2,
   },
@@ -190,8 +212,11 @@ const styles = StyleSheet.create({
       remainder.
     */
     maxWidth: 18,
-    height: PLOT_HEIGHT,
-    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  trackArea: {
+    flex: 1,
+    width: '100%',
   },
   track: {
     flex: 1,
@@ -207,17 +232,44 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: radii.sm,
     borderCurve: 'continuous',
+  },
+  barQuiet: {
+    backgroundColor: BAR_QUIET,
+  },
+  barPeak: {
     backgroundColor: colors.accent,
   },
-  axis: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  /**
+   * Reserved amount-label row. Height is paid for by every column so the
+   * bars keep one baseline; only the busiest column renders ink in it. The
+   * label is deliberately wider than its column and allowed to overflow —
+   * the surrounding columns are quiet at the peak — so the amount never
+   * wraps.
+   */
+  peakSlot: {
+    height: 16,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  peakLabel: {
+    width: 56,
+    textAlign: 'center',
+  },
+  /**
+   * Weekly ticks. Each label is wider than its column (see above), so it is
+   * centred and allowed to overflow — the ticks are a week apart, so the ink
+   * never collides.
+   */
+  tick: {
+    width: 32,
+    textAlign: 'center',
     paddingTop: spacing.xs,
   },
-  axisLabel: {
-    flexShrink: 1,
+  tickPeak: {
+    fontWeight: '700',
   },
   footnote: {
-    paddingTop: spacing.xxs,
+    paddingTop: spacing.sm,
   },
 });

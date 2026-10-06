@@ -11,11 +11,11 @@ import {
 
 import { DateGroupHeader } from '@/components/expenses/date-group-header';
 import { ExpenseRow } from '@/components/expenses/expense-row';
-import { ButtonIcon, ButtonLabel, GlassButton } from '@/components/ui/button';
+import { ButtonLabel, GlassButton } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Icon } from '@/components/ui/icon';
 import { Screen } from '@/components/ui/screen';
 import { ScreenHeader } from '@/components/ui/screen-header';
+import { SettingsIconButton } from '@/components/ui/settings-icon-button';
 import { Text } from '@/components/ui/text';
 import { getDatabase } from '@/database/database';
 import {
@@ -248,21 +248,7 @@ export default function ExpensesScreen() {
           below is the other entry point to it, but that unmounts on the first
           expense, which would leave no way to add the second one from this screen.
         */
-        action={
-          <GlassButton
-            accessibilityLabel="Add expense"
-            accessibilityHint="Opens the add expense screen"
-            onPress={handleAdd}
-            size="sm"
-            variant="primary"
-            testID="expenses-add"
-          >
-            <ButtonIcon>
-              <Icon name="plus" size={18} color={colors.textOnAccent} />
-            </ButtonIcon>
-            <ButtonLabel>Add</ButtonLabel>
-          </GlassButton>
-        }
+        action={<SettingsIconButton testID="expenses-settings" />}
       />
 
       {/*

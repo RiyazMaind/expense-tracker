@@ -1,11 +1,13 @@
+import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 
 import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 
 import { GlassCard } from '@/components/glass/glass-card';
 import { ButtonLabel, GlassButton } from '@/components/ui/button';
+import { Icon } from '@/components/ui/icon';
 import { Screen } from '@/components/ui/screen';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { Text } from '@/components/ui/text';
@@ -18,7 +20,7 @@ import {
   serializeExport,
 } from '@/services/data-transfer';
 import { useExpenseStore } from '@/store/expenseStore';
-import { spacing } from '@/theme';
+import { colors, spacing, touchTarget } from '@/theme';
 
 type DataStatus =
   | { kind: 'idle' }
@@ -155,6 +157,34 @@ export default function SettingsScreen() {
         </Text>
       </GlassCard>
 
+      {/*
+        Budget's door. It left the bottom bar when the bar was cut back to
+        Home | Add | Expenses (docs/screens.md lists "Monthly budget" among the
+        Settings options), and without this row the screen would be unreachable.
+        The row itself matches the Analytics link on Home, so the two "this lives
+        elsewhere now" affordances in the app read as one pattern.
+      */}
+      <GlassCard
+        title="Monthly budget"
+        subtitle="Control this month's spending"
+        testID="card-budget-link"
+      >
+        <Pressable
+          testID="settings-budget"
+          accessibilityRole="button"
+          accessibilityLabel="Open budget"
+          accessibilityHint="Set and track this month's spending limit"
+          onPress={() => router.push('/budget')}
+          style={styles.linkRow}
+        >
+          <Icon name="wallet" size={18} color={colors.accent} />
+          <Text variant="body" tone="secondary" style={styles.linkLabel}>
+            Set and track your monthly budget
+          </Text>
+          <Icon name="chevronRight" size={16} color={colors.textTertiary} />
+        </Pressable>
+      </GlassCard>
+
       <GlassCard title="Storage" testID="card-storage">
         <Text variant="body" tone="secondary" testID="settings-storage-info">
           All your data is stored locally on this device in SQLite. The app works fully offline — nothing
@@ -222,5 +252,16 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   actions: {
     gap: spacing.sm,
+  },
+  linkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.sm,
+    // A row that is a link still has to be a full-height touch target.
+    minHeight: touchTarget.min,
+  },
+  linkLabel: {
+    flex: 1,
   },
 });
