@@ -48,6 +48,28 @@ const CREATE_INDEXES = [
   `CREATE INDEX IF NOT EXISTS expenses_category_date_idx ON expenses (category, date);`,
 ];
 
+/**
+ * The `budgets` table from docs/data-model.md, with `amount` renamed to
+ * `amount_minor` for the same reason as `expenses`: the column holds whole
+ * paise, never a rupee float. `month` is unique because a month has exactly one
+ * budget — setting a budget for a month that already has one is an update to
+ * that row, not a second row.
+ */
+const CREATE_BUDGETS = `
+CREATE TABLE IF NOT EXISTS budgets (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  month TEXT NOT NULL UNIQUE CHECK (
+    length(month) = 7
+    AND substr(month, 5, 1) = '-'
+    AND substr(month, 1, 4) GLOB '[0-9][0-9][0-9][0-9]'
+    AND CAST(substr(month, 6, 2) AS INTEGER) BETWEEN 1 AND 12
+  ),
+  amount_minor INTEGER NOT NULL CHECK (amount_minor > 0),
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+) STRICT;
+`;
+
 export type Migration = {
   /** The `user_version` this migration leaves behind. Must be the previous max + 1. */
   readonly version: number;
@@ -61,6 +83,7 @@ export type Migration = {
  */
 export const MIGRATIONS: readonly Migration[] = [
   { version: 1, statements: [CREATE_EXPENSES, ...CREATE_INDEXES] },
+  { version: 2, statements: [CREATE_BUDGETS] },
 ];
 
 const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1]?.version ?? 0;

@@ -36,11 +36,31 @@ export function toDateKey(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-/** Inverse of `toDateKey`. Returns local midnight for the given day. */
+/**
+ * Inverse of `toDateKey`. Returns local midnight for the given day.
+ */
 export function fromDateKey(key: string): Date {
   const [year, month, day] = key.split('-').map(Number);
 
   return new Date(year ?? 1970, (month ?? 1) - 1, day ?? 1);
+}
+
+/**
+ * `YYYY-MM` for the calendar month containing `date`, local time.
+ *
+ * The storage shape for `budgets.month` (docs/data-model.md): one budget per
+ * calendar month, like the expense `date` key but at coarser resolution.
+ */
+export function toMonthKey(date: Date): string {
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, '0');
+
+  return `${year}-${month}`;
+}
+
+/** Whether `key` is a real month identifier in `YYYY-MM` form. */
+export function isValidMonthKey(key: string): boolean {
+  return /^\d{4}-(0[1-9]|1[0-2])$/.test(key);
 }
 
 /**
