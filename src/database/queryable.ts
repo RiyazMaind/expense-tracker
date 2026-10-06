@@ -21,5 +21,5 @@ export type QueryableDatabase = {
   withExclusiveTransactionAsync(task: (txn: TransactionRunner) => Promise<void>): Promise<void>;
 };
 
-/** What a migration may run against — DDL, and the version bump. */
-export type TransactionRunner = Pick<QueryableDatabase, 'execAsync' | 'runAsync'>;
+/** What a migration or import may run against — DDL plus reads on the same connection. */
+export type TransactionRunner = Pick<QueryableDatabase, 'execAsync' | 'runAsync' | 'getFirstAsync' | 'getAllAsync'>;

@@ -38,9 +38,12 @@
       [
         "expo-font",
         {
-          "fonts": ["./assets/fonts/PlusJakartaSans.ttf"]
+          "fonts": [
+            "./assets/fonts/PlusJakartaSans.ttf"
+          ]
         }
-      ]
+      ],
+      "expo-sharing"
     ],
     "experiments": {
       "typedRoutes": true,

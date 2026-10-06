@@ -75,9 +75,9 @@ export type TestDatabase = QueryableDatabase & {
   close: () => void;
 };
 
-/** A migrated, empty, in-memory database — one per suite. */
-export function createTestDatabase(): TestDatabase {
-  const db = new DatabaseSync(':memory:');
+/** A migrated handle over a fresh database — in-memory by default, file-backed when given a path (used for restart tests). */
+export function createTestDatabase(filename: string = ':memory:'): TestDatabase {
+  const db = new DatabaseSync(filename);
 
   const runner: QueryableDatabase = {
     async execAsync(source: string) {
