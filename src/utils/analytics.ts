@@ -24,15 +24,16 @@ import { addDays, fromDateKey, toDateKey } from '@/utils/dates';
 export type AnalyticsPeriods = {
   /** Monday to Sunday, per docs/data-model.md. */
   week: DateRange;
-  /** First to last day of the current calendar month. */
+  /** First to last day of the calendar month containing the reference reading. */
   month: DateRange;
   /**
-   * The month up to today.
+   * The month up to the reference reading.
    *
    * Deliberately shorter than `month` on every day except the last: the trend
    * answers "how have I been spending this month", and drawing empty columns for
    * days that have not happened yet would flatten the chart and make the average
-   * look worse than it is.
+   * look worse than it is. For a past month the reading is that month's last
+   * day, so the window covers all of it.
    */
   trend: DateRange;
 };
@@ -61,6 +62,8 @@ export type TrendDay = {
 export type AnalyticsReport = {
   weekPaise: number;
   monthPaise: number;
+  /** Entries recorded in the reported month — the past-month view's "Expenses" tile. */
+  monthEntryCount: number;
   expenseCount: number;
   /** Whether anything has ever been recorded. Drives the first-run empty state. */
   hasExpenses: boolean;
@@ -83,6 +86,7 @@ export type AnalyticsInput = {
   periods: AnalyticsPeriods;
   weekPaise: number;
   monthPaise: number;
+  monthEntryCount: number;
   expenseCount: number;
   /** One entry per category the database reported. Duplicates are merged. */
   categoryTotals: readonly CategoryAmount[];
@@ -97,7 +101,7 @@ export type AnalyticsInput = {
  * reimplemented: if Analytics and Home disagreed about where a week starts, the
  * same figure would carry two values on two screens.
  *
- * The trend window is the month clipped to today. Comparing ISO date keys as
+ * The trend window is the month clipped to the reading. Comparing ISO date keys as
  * text is exact — they are zero-padded and `YYYY-MM-DD` sorts in calendar order —
  * which is the same property the `expenses_date_idx` range predicates rely on.
  */
@@ -316,6 +320,7 @@ export function buildAnalyticsReport(input: AnalyticsInput): AnalyticsReport {
   return {
     weekPaise: input.weekPaise,
     monthPaise: input.monthPaise,
+    monthEntryCount: input.monthEntryCount,
     expenseCount: input.expenseCount,
     hasExpenses: input.expenseCount > 0,
     hasMonthSpending: input.monthPaise > 0,

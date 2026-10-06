@@ -108,6 +108,19 @@ export function addMonths(date: Date, months: number): Date {
   return shifted;
 }
 
+/**
+ * `YYYY-MM` shifted by whole months — the Home screen's month browsing.
+ *
+ * Built on the first of the month so the result is always a valid month key:
+ * `addMonths` already normalises to day 1, and `toMonthKey` reads it back
+ * locally, so December 2025 plus one is January 2026 with no rollover branch
+ * of its own. Keys are zero-padded and lexicographic order equals calendar
+ * order, which is what the switcher's bounds checks compare.
+ */
+export function shiftMonthKey(monthKey: string, delta: number): string {
+  return toMonthKey(addMonths(fromDateKey(`${monthKey}-01`), delta));
+}
+
 export function isSameDateKey(a: string, b: string): boolean {
   return a === b;
 }

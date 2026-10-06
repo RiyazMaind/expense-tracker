@@ -103,6 +103,10 @@ describe('ExpenseRepository against an empty database', () => {
   it('returns no expenses for a range', async () => {
     assert.deepEqual(await repository.listInRange({ fromKey: '2026-01-01', toKey: '2026-12-31' }), []);
   });
+
+  it('reports no earliest month when nothing has been recorded', async () => {
+    assert.equal(await repository.getEarliestMonthKey(), null);
+  });
 });
 
 describe('ExpenseRepository.insert', () => {
@@ -329,6 +333,40 @@ describe('ExpenseRepository.getSummary', () => {
     );
 
     mixed.close();
+  });
+});
+
+describe('ExpenseRepository.getEarliestMonthKey', () => {
+  let db: TestDatabase;
+  let repository: ExpenseRepository;
+
+  before(async () => {
+    db = createTestDatabase();
+    await runMigrations(db);
+    repository = new ExpenseRepository(db);
+
+    // Inserted newest first on purpose: MIN(date) must not depend on row order.
+    await repository.insert(expense({ amountPaise: 1000, dateKey: '2026-10-06' }));
+    await repository.insert(expense({ amountPaise: 2000, dateKey: '2025-12-31' }));
+    await repository.insert(expense({ amountPaise: 3000, dateKey: '2026-09-30' }));
+  });
+
+  after(() => {
+    db.close();
+  });
+
+  it('returns the earliest month that has expenses, not the first inserted', async () => {
+    assert.equal(await repository.getEarliestMonthKey(), '2025-12');
+  });
+
+  it('re-answers once the earliest month is deleted', async () => {
+    const [december] = await repository.listInRange({ fromKey: '2025-12-01', toKey: '2025-12-31' });
+
+    assert.ok(december != null, 'the December expense must exist');
+
+    await repository.remove(december.id);
+
+    assert.equal(await repository.getEarliestMonthKey(), '2026-09');
   });
 });
 

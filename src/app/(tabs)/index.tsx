@@ -6,6 +6,8 @@ import { CategoryBreakdown } from '@/components/analytics/category-breakdown';
 import { DailyTrendChart } from '@/components/analytics/daily-trend-chart';
 import { TotalsHero } from '@/components/analytics/totals-hero';
 import { BudgetInsight } from '@/components/budget/budget-insight';
+import { CompletedMonthBudget } from '@/components/budget/completed-month-budget';
+import { MonthSwitcher } from '@/components/dashboard/month-switcher';
 import { StatTile } from '@/components/dashboard/stat-tile';
 import { GlassCard } from '@/components/glass/glass-card';
 import { ButtonLabel, GlassButton } from '@/components/ui/button';
@@ -13,9 +15,11 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { Screen } from '@/components/ui/screen';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { SettingsIconButton } from '@/components/ui/settings-icon-button';
+import { getCategory } from '@/constants/categories';
 import { getDatabase } from '@/database/database';
 import { AnalyticsRepository } from '@/database/repositories/analytics-repository';
 import { BudgetRepository } from '@/database/repositories/budget-repository';
+import { ExpenseRepository } from '@/database/repositories/expense-repository';
 import { useExpenseStore } from '@/store/expenseStore';
 import { colors, spacing } from '@/theme';
 import {
@@ -29,8 +33,9 @@ import {
   formatMonthKey,
   type BudgetOutlook,
 } from '@/utils/budget';
+import { endOfMonth } from '@/utils/calculations';
 import { formatInr } from '@/utils/currency';
-import { formatMonthYear, formatShortDay, fromDateKey } from '@/utils/dates';
+import { formatMonthYear, formatShortDay, fromDateKey, shiftMonthKey } from '@/utils/dates';
 
 /**
  * Home — the overview and the breakdown, on one screen.
@@ -57,6 +62,13 @@ import { formatMonthYear, formatShortDay, fromDateKey } from '@/utils/dates';
  * every other figure is a tile. Nothing derived is stored — `buildAnalyticsReport`
  * runs on query results and SQLite keeps only the rows
  * (docs/architecture.md, Database Rule).
+ *
+ * The whole dashboard reads one month at a time. A switcher under the header
+ * walks back through every past month that has expenses — hero, tiles, trend,
+ * categories and budget all re-scope to it — and the forward arrow rejoins the
+ * current month when it lands there. Past months state what happened ("Month
+ * ended ₹X under budget") instead of forecasting what will, because every day
+ * of a month being browsed has already happened.
  */
 export default function HomeScreen() {
   const summary = useExpenseStore((state) => state.summary);
@@ -75,6 +87,20 @@ export default function HomeScreen() {
     monthKey: string;
     outlook: BudgetOutlook | null;
   } | null>(null);
+
+  /*
+    Which month the dashboard is showing. `null` follows the current month — the
+    default — so a fresh session needs no clock reading to know where it is, and
+    a rollover while the app sits open is picked up by the next focus read
+    instead of being pinned to whatever "current" meant at mount.
+  */
+  const [viewMonthKey, setViewMonthKey] = useState<string | null>(null);
+  /* The current month as of the last successful read — the switcher's forward bound. */
+  const [loadedCurrentKey, setLoadedCurrentKey] = useState<string | null>(null);
+  /* The earliest month with expenses: where the switcher's back button stops. */
+  const [earliestMonthKey, setEarliestMonthKey] = useState<string | null>(null);
+  /* Label fallback before the first read lands. */
+  const [initialMonthKey] = useState(() => currentMonthKey(new Date()));
 
   /*
     Focus can arrive again before the previous read has finished, and two reads
@@ -96,18 +122,37 @@ export default function HomeScreen() {
         reading, so a month boundary cannot fall between them and produce totals
         that disagree with the bars beside them.
       */
-      const reference = new Date();
+      const now = new Date();
+      const currentKey = currentMonthKey(now);
+
+      /*
+        The month being read: the chosen one, or the current month when none is
+        chosen. A past month reads against its own last day rather than "now",
+        so its periods resolve inside it — `resolveAnalyticsPeriods` clips the
+        trend to the reading it is given, and reads against "now" would describe
+        today instead of the month on screen. Statements rather than a ternary
+        for the reason the outlook block below gives: this project's Babel React
+        Compiler cannot lower a conditional expression inside a `try`.
+      */
+      let reference = now;
+      let monthKey = currentKey;
+
+      if (viewMonthKey != null) {
+        reference = endOfMonth(fromDateKey(`${viewMonthKey}-01`));
+        monthKey = viewMonthKey;
+      }
+
       const periods = resolveAnalyticsPeriods(reference);
-      const monthKey = currentMonthKey(reference);
 
       const database = await getDatabase();
       const repository = new AnalyticsRepository(database);
 
-      const [totals, categoryTotals, dailyTotals, budgetRow] = await Promise.all([
+      const [totals, categoryTotals, dailyTotals, budgetRow, earliestMonth] = await Promise.all([
         repository.getPeriodTotals(reference),
         repository.getCategoryTotals(periods.month),
         repository.getDailyTotals(periods.trend),
         new BudgetRepository(database).getBudget(monthKey),
+        new ExpenseRepository(database).getEarliestMonthKey(),
       ]);
 
       if (latestLoad.current !== loadId) {
@@ -129,11 +174,14 @@ export default function HomeScreen() {
       }
 
       setBudget({ monthKey, outlook });
+      setLoadedCurrentKey(currentKey);
+      setEarliestMonthKey(earliestMonth);
       setReport(
         buildAnalyticsReport({
           periods,
           weekPaise: totals.weekPaise,
           monthPaise: totals.monthPaise,
+          monthEntryCount: totals.monthEntryCount,
           expenseCount: totals.expenseCount,
           categoryTotals,
           dailyTotals,
@@ -153,7 +201,7 @@ export default function HomeScreen() {
       console.warn('[home] could not load the spending breakdown', error);
       setReportStatus('error');
     }
-  }, []);
+  }, [viewMonthKey]);
 
   /*
     Focus, not mount. This screen stays mounted while the user is in
@@ -168,7 +216,62 @@ export default function HomeScreen() {
     }, [loadSummary, loadReport]),
   );
 
+  /*
+    Switching months drops what is in flight before it can land: the read for
+    the month being left would otherwise repopulate the screen under the new
+    month's heading. The report is cleared for the same reason — a spinner is
+    more honest than last month's numbers under this month's label — and the
+    focus effect refires because `loadReport`'s identity now depends on
+    `viewMonthKey`.
+  */
+  const handleMonthChange = useCallback((next: string | null) => {
+    latestLoad.current += 1;
+    setViewMonthKey(next);
+    setReport(null);
+    setReportStatus('loading');
+  }, []);
+
   const hasExpenses = (summary?.expenseCount ?? 0) > 0;
+
+  const currentKey = loadedCurrentKey ?? initialMonthKey;
+  const displayKey = viewMonthKey ?? currentKey;
+  const isCurrentMonth = viewMonthKey == null;
+  const previousMonthKey = shiftMonthKey(displayKey, -1);
+  const nextMonthKey = shiftMonthKey(displayKey, 1);
+
+  /*
+    Bounds as facts, not affordances: back stops at the earliest month that has
+    anything in it (browsing further would show an empty month), forward stops
+    at the current month (future months are not yet spent) and is off entirely
+    while following the current month. Keys are zero-padded, so comparing them
+    as text is comparing them as calendar months.
+  */
+  const canGoBack = earliestMonthKey != null && previousMonthKey >= earliestMonthKey;
+  const canGoForward = !isCurrentMonth && nextMonthKey <= currentKey;
+
+  const handlePrevMonth = useCallback(() => {
+    handleMonthChange(previousMonthKey);
+  }, [handleMonthChange, previousMonthKey]);
+
+  const handleNextMonth = useCallback(() => {
+    /*
+      Landing on the current month rejoins it rather than pinning the key, so a
+      rollover keeps the dashboard on "this month" without another tap.
+    */
+    handleMonthChange(nextMonthKey >= currentKey ? null : nextMonthKey);
+  }, [handleMonthChange, nextMonthKey, currentKey]);
+
+  const handleResetMonth = useCallback(() => {
+    handleMonthChange(null);
+  }, [handleMonthChange]);
+
+  /*
+    The budget read describes `budget.monthKey`. Pairing it with any other
+    month's heading would put one month's plan against another month's
+    spending, so it is shown only once the read has caught up with the month
+    on screen — during the switch it simply steps aside.
+  */
+  const activeBudget = budget != null && budget.monthKey === displayKey ? budget : null;
 
   const periodLabel =
     report?.days[0] != null ? formatMonthYear(fromDateKey(report.days[0].dateKey)) : '';
@@ -184,6 +287,18 @@ export default function HomeScreen() {
   const busiestDayLabel =
     report?.busiestDay != null ? formatShortDay(fromDateKey(report.busiestDay.dateKey)) : '—';
 
+  const heroLabel = isCurrentMonth ? 'Spent this month' : `Spent in ${formatMonthKey(displayKey)}`;
+
+  /*
+    The current month prefers the cached summary, so its hero is on screen the
+    instant the screen is — a month being browsed has no cached counterpart and
+    reads from the report, which is `null` while its load runs (the spinner
+    below covers that gap).
+  */
+  const heroAmountPaise = isCurrentMonth
+    ? summary?.monthPaise ?? report?.monthPaise ?? 0
+    : report?.monthPaise ?? 0;
+
   return (
     <Screen testID="screen-home">
       <ScreenHeader
@@ -197,27 +312,70 @@ export default function HomeScreen() {
       />
 
       {/*
+        The month everything below is scoped to. Hidden on the first-run empty
+        state: there is no earlier month to browse, and a control that does
+        nothing but explain that is noise.
+      */}
+      {hasExpenses ? (
+        <MonthSwitcher
+          label={formatMonthKey(displayKey)}
+          canGoBack={canGoBack}
+          canGoForward={canGoForward}
+          onBack={handlePrevMonth}
+          onForward={handleNextMonth}
+          onReset={isCurrentMonth ? undefined : handleResetMonth}
+          testID="home-month-switcher"
+        />
+      ) : null}
+
+      {/*
         The month is the number the budget is measured against, so it takes the
         hero and everything below is context for it.
       */}
       <TotalsHero
-        label="Spent this month"
-        amountPaise={summary?.monthPaise ?? report?.monthPaise ?? 0}
+        label={heroLabel}
+        amountPaise={heroAmountPaise}
         caption={monthCaption}
         testID="home-hero"
       />
 
       <View style={styles.tiles}>
-        <StatTile
-          label="Today"
-          value={formatInr(summary?.todayPaise ?? 0)}
-          testID="tile-today"
-        />
-        <StatTile
-          label="This week"
-          value={formatInr(summary?.weekPaise ?? 0)}
-          testID="tile-week"
-        />
+        {isCurrentMonth ? (
+          <>
+            <StatTile
+              label="Today"
+              value={formatInr(summary?.todayPaise ?? 0)}
+              testID="tile-today"
+            />
+            <StatTile
+              label="This week"
+              value={formatInr(summary?.weekPaise ?? 0)}
+              testID="tile-week"
+            />
+          </>
+        ) : (
+          <>
+            {/*
+              The current pair is anchored to "now" and means nothing for a
+              month that has ended, so a month being browsed answers its own
+              questions instead: how many entries, and what dominated them.
+            */}
+            <StatTile
+              label="Expenses"
+              value={report != null ? String(report.monthEntryCount) : '—'}
+              testID="tile-month-count"
+            />
+            <StatTile
+              label="Top category"
+              value={
+                report?.highestCategory != null
+                  ? getCategory(report.highestCategory.category).label
+                  : '—'
+              }
+              testID="tile-top-category"
+            />
+          </>
+        )}
       </View>
 
       <View style={styles.tiles}>
@@ -294,8 +452,12 @@ export default function HomeScreen() {
           that explains where the numbers would have come from.
         */
         <GlassCard
-          title="Nothing logged this month"
-          subtitle={`Nothing recorded in ${periodLabel} yet. The trend and the category breakdown fill in as you add expenses.`}
+          title={isCurrentMonth ? 'Nothing logged this month' : `Nothing logged in ${periodLabel}`}
+          subtitle={
+            isCurrentMonth
+              ? `Nothing recorded in ${periodLabel} yet. The trend and the category breakdown fill in as you add expenses.`
+              : `Nothing recorded in ${periodLabel}. An expense dated in this month will show up here.`
+          }
           testID="home-no-month-spending"
         />
       ) : null}
@@ -307,18 +469,32 @@ export default function HomeScreen() {
         shows whenever expenses exist — even a month with no spending still has
         a truthful "0% used, everything left" — and steps aside entirely on the
         first-run empty state, where the one thing to do is log an expense.
+
+        A month being browsed gets the outcome card instead of the forecast:
+        the outlook for a completed month has no days left to change it, so
+        "Month ends ₹X · N days left" would be a claim about days that already
+        happened. An unset budget for a past month offers no set button either —
+        there is no longer a month to plan.
       */}
-      {hasExpenses && budget != null ? (
-        budget.outlook != null ? (
-          <BudgetInsight
-            outlook={budget.outlook}
-            monthKey={budget.monthKey}
-            testID="home-budget"
-          />
-        ) : (
+      {hasExpenses && activeBudget != null ? (
+        activeBudget.outlook != null ? (
+          isCurrentMonth ? (
+            <BudgetInsight
+              outlook={activeBudget.outlook}
+              monthKey={activeBudget.monthKey}
+              testID="home-budget"
+            />
+          ) : (
+            <CompletedMonthBudget
+              outlook={activeBudget.outlook}
+              monthKey={activeBudget.monthKey}
+              testID="home-budget"
+            />
+          )
+        ) : isCurrentMonth ? (
           <GlassCard
             title="Budget progress"
-            subtitle={`No budget set for ${formatMonthKey(budget.monthKey)}`}
+            subtitle={`No budget set for ${formatMonthKey(activeBudget.monthKey)}`}
             testID="home-budget-empty"
           >
             <GlassButton
@@ -330,6 +506,12 @@ export default function HomeScreen() {
               <ButtonLabel>Set budget</ButtonLabel>
             </GlassButton>
           </GlassCard>
+        ) : (
+          <GlassCard
+            title="Budget progress"
+            subtitle={`No budget set for ${formatMonthKey(activeBudget.monthKey)}`}
+            testID="home-budget-empty"
+          />
         )
       ) : null}
     </Screen>

@@ -31,7 +31,7 @@ import { resolveDashboardPeriods, type DateRange } from '@/utils/calculations';
 export type AnalyticsPeriodTotals = {
   weekPaise: number;
   monthPaise: number;
-  /** Expenses recorded in the current month. Not the all-time count. */
+  /** Expenses recorded in the month `reference` falls in. Not the all-time count. */
   monthEntryCount: number;
   /** Every expense ever recorded — this, not the monthly total, drives the empty state. */
   expenseCount: number;
