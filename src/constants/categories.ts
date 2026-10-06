@@ -26,18 +26,20 @@ export type Category = {
   id: CategoryId;
   label: string;
   icon: IconName;
+  color: string;
+  badgeBg: string;
 };
 
 export const categories: readonly Category[] = [
-  { id: 'food', label: 'Food', icon: 'food' },
-  { id: 'transport', label: 'Transport', icon: 'transport' },
-  { id: 'shopping', label: 'Shopping', icon: 'shopping' },
-  { id: 'bills', label: 'Bills', icon: 'receipt' },
-  { id: 'entertainment', label: 'Entertainment', icon: 'entertainment' },
-  { id: 'health', label: 'Health', icon: 'health' },
-  { id: 'education', label: 'Education', icon: 'education' },
-  { id: 'groceries', label: 'Groceries', icon: 'groceries' },
-  { id: 'other', label: 'Other', icon: 'other' },
+  { id: 'food', label: 'Food', icon: 'food', color: '#F59E0B', badgeBg: 'rgba(245, 158, 11, 0.16)' },
+  { id: 'transport', label: 'Transport', icon: 'transport', color: '#38BDF8', badgeBg: 'rgba(56, 189, 248, 0.16)' },
+  { id: 'shopping', label: 'Shopping', icon: 'shopping', color: '#F43F5E', badgeBg: 'rgba(244, 63, 94, 0.16)' },
+  { id: 'bills', label: 'Bills', icon: 'receipt', color: '#A855F7', badgeBg: 'rgba(168, 85, 247, 0.16)' },
+  { id: 'entertainment', label: 'Entertainment', icon: 'entertainment', color: '#EC4899', badgeBg: 'rgba(236, 72, 153, 0.16)' },
+  { id: 'health', label: 'Health', icon: 'health', color: '#10B981', badgeBg: 'rgba(16, 185, 129, 0.16)' },
+  { id: 'education', label: 'Education', icon: 'education', color: '#6366F1', badgeBg: 'rgba(99, 102, 241, 0.16)' },
+  { id: 'groceries', label: 'Groceries', icon: 'groceries', color: '#84CC16', badgeBg: 'rgba(132, 204, 22, 0.16)' },
+  { id: 'other', label: 'Other', icon: 'other', color: '#94A3B8', badgeBg: 'rgba(148, 163, 184, 0.16)' },
 ];
 
 /**
@@ -74,4 +76,4 @@ const categoryIds: ReadonlySet<string> = new Set(categories.map((category) => ca
  */
 export function isCategoryId(id: string): id is CategoryId {
   return categoryIds.has(id);
-}
+}

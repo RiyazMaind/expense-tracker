@@ -53,6 +53,7 @@ export function AmountField({
       testID={testID}
       style={[styles.surface, hasError && styles.surfaceError]}
     >
+      <View style={[styles.topSheen, hasError ? styles.sheenError : styles.sheenNormal]} />
       <View style={styles.inner}>
         <Text variant="label" tone="secondary">
           Amount
@@ -64,7 +65,7 @@ export function AmountField({
           centred hero amount does on every keystroke.
         */}
         <View style={styles.row}>
-          <Text variant="display" tone="tertiary">
+          <Text variant="display" style={styles.currencySymbol}>
             ₹
           </Text>
 
@@ -119,18 +120,26 @@ export function AmountField({
 
 const styles = StyleSheet.create({
   surface: {
-    // Left at the app's standard hairline. Only the error state thickens it.
+    overflow: 'hidden',
   },
   surfaceError: {
-    // A red hairline on the field itself, so the failure is attributed to the
-    // input rather than floating beneath it as unexplained text.
     borderWidth: 1,
     borderColor: colors.destructive,
   },
+  topSheen: {
+    height: 2,
+    borderTopLeftRadius: radii.xl,
+    borderTopRightRadius: radii.xl,
+  },
+  sheenNormal: {
+    backgroundColor: colors.accent,
+    opacity: 0.6,
+  },
+  sheenError: {
+    backgroundColor: colors.destructive,
+    opacity: 0.9,
+  },
   inner: {
-    // Tighter vertically than horizontally. The box is a container for one hero
-    // number, not a form row, so the extra vertical air bought nothing — and on
-    // a 640dp screen it pushed the date chips below the fold.
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     gap: spacing.xs,
@@ -140,13 +149,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
   },
+  currencySymbol: {
+    color: colors.accent,
+    fontWeight: '700',
+  },
   input: {
     ...textVariants.display,
     fontFamily: fontFamily.sans,
-    // The hero number is left-aligned, so filling the row changes nothing
-    // visually — but it does mean the whole field is tappable. Sized to its
-    // text instead, the input was only ~25dp wide when empty and a tap beside
-    // the digit landed on inert glass.
     flex: 1,
     color: colors.text,
     padding: 0,

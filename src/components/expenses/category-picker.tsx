@@ -75,7 +75,9 @@ export function CategoryPicker({ value, onChange, testID }: CategoryPickerProps)
                 style={({ pressed }) => [
                   styles.chip,
                   { width: chipWidth },
-                  selected ? styles.chipSelected : styles.chipIdle,
+                  selected
+                    ? { backgroundColor: category.badgeBg, borderColor: category.color + '66' }
+                    : styles.chipIdle,
                   pressed && styles.chipPressed,
                 ]}
                 testID={`category-${category.id}`}
@@ -83,14 +85,14 @@ export function CategoryPicker({ value, onChange, testID }: CategoryPickerProps)
                 <Icon
                   name={category.icon}
                   size={20}
-                  color={selected ? colors.accent : colors.textTertiary}
-                  strokeWidth={selected ? 2.1 : 1.8}
+                  color={selected ? category.color : colors.textTertiary}
+                  strokeWidth={selected ? 2.2 : 1.8}
                 />
                 <Text
                   variant="caption"
                   tone={selected ? 'primary' : 'secondary'}
                   numberOfLines={1}
-                  style={selected ? styles.labelSelected : undefined}
+                  style={selected ? { color: category.color, fontWeight: '700' } : undefined}
                 >
                   {category.label}
                 </Text>
@@ -143,7 +145,8 @@ const styles = StyleSheet.create({
     borderColor: colors.accent,
   },
   chipPressed: {
-    opacity: 0.7,
+    opacity: 0.8,
+    transform: [{ scale: 0.95 }],
   },
   labelSelected: {
     fontWeight: '700',

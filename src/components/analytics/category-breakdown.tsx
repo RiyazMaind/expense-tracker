@@ -108,8 +108,8 @@ const CategoryRow = memo(function CategoryRow({
       accessibilityLabel={`${meta.label}, ${amount}, ${percent}% of ${periodLabel} spending, ${entriesLabel}`}
     >
       <View style={styles.top}>
-        <View style={styles.badge}>
-          <Icon name={meta.icon} size={18} color={colors.textSecondary} />
+        <View style={[styles.badge, { backgroundColor: meta.badgeBg, borderColor: meta.color + '33' }]}>
+          <Icon name={meta.icon} size={18} color={meta.color} />
         </View>
 
         <View style={styles.copy}>
@@ -130,15 +130,17 @@ const CategoryRow = memo(function CategoryRow({
           <Text variant="title3" tabular numberOfLines={1}>
             {amount}
           </Text>
-          <Text variant="micro" tone="tertiary" tabular>
-            {`${percent}%`}
-          </Text>
+          <View style={[styles.percentBadge, { backgroundColor: meta.badgeBg }]}>
+            <Text variant="micro" tabular style={{ color: meta.color, fontWeight: '700' }}>
+              {`${percent}%`}
+            </Text>
+          </View>
         </View>
       </View>
 
       <View style={styles.track} importantForAccessibility="no-hide-descendants">
         <View
-          style={[styles.fill, { width: `${percent}%` }]}
+          style={[styles.fill, { width: `${percent}%`, backgroundColor: meta.color }]}
           testID={`analytics-category-bar-${category}`}
         />
       </View>
@@ -174,6 +176,12 @@ const styles = StyleSheet.create({
   },
   amounts: {
     alignItems: 'flex-end',
+    gap: 2,
+  },
+  percentBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    borderRadius: radii.pill,
   },
   track: {
     height: 6,

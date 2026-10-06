@@ -16,9 +16,11 @@ export function ScreenHeader({ title, subtitle, action, testID }: ScreenHeaderPr
   return (
     <View style={styles.root} testID={testID}>
       <View style={styles.text}>
-        <Text variant="title" accessibilityRole="header">
-          {title}
-        </Text>
+        <View style={styles.titleRow}>
+          <Text variant="title" accessibilityRole="header">
+            {title}
+          </Text>
+        </View>
         {typeof subtitle === 'string' ? (
           <Text variant="caption" tone="secondary">
             {subtitle}
@@ -40,5 +42,10 @@ const styles = StyleSheet.create({
   text: {
     flexShrink: 1,
     gap: spacing.xxs,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
   },
 });

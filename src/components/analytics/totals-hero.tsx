@@ -2,7 +2,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { GlassCard } from '@/components/glass/glass-card';
 import { Text } from '@/components/ui/text';
-import { spacing } from '@/theme';
+import { colors, radii, spacing } from '@/theme';
 import { formatInr } from '@/utils/currency';
 
 export type TotalsHeroProps = {
@@ -47,10 +47,21 @@ export function TotalsHero({ label, amountPaise, caption, testID }: TotalsHeroPr
       */
       accessibilityLabel={`${label}: ${amount}.${caption == null ? '' : ` ${caption}`}`}
     >
+      <View style={styles.topSheen} />
+      <View style={styles.glowBackdrop} />
       <View style={styles.body}>
-        <Text variant="label" tone="secondary" numberOfLines={1}>
-          {label}
-        </Text>
+        <View style={styles.headerRow}>
+          <Text variant="label" tone="secondary" numberOfLines={1}>
+            {label}
+          </Text>
+          <View style={styles.heroTag}>
+            <View style={styles.tagDot} />
+            <Text variant="caption" tone="secondary" style={styles.tagText}>
+              MONTHLY TOTAL
+            </Text>
+          </View>
+        </View>
+
         {/*
           No `numberOfLines`. A seven-figure rupee amount is wider than 360dp at
           44pt, and truncating an amount — with an ellipsis in the middle of the
@@ -60,6 +71,7 @@ export function TotalsHero({ label, amountPaise, caption, testID }: TotalsHeroPr
         <Text variant="display" tabular testID="hero-amount">
           {amount}
         </Text>
+
         {typeof caption === 'string' ? (
           <Text variant="caption" tone="tertiary">
             {caption}
@@ -71,9 +83,53 @@ export function TotalsHero({ label, amountPaise, caption, testID }: TotalsHeroPr
 }
 
 const styles = StyleSheet.create({
+  topSheen: {
+    height: 2,
+    backgroundColor: colors.accent,
+    opacity: 0.7,
+    borderTopLeftRadius: radii.xl,
+    borderTopRightRadius: radii.xl,
+  },
+  glowBackdrop: {
+    position: 'absolute',
+    top: -20,
+    right: -20,
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: 'rgba(108, 123, 255, 0.08)',
+  },
   body: {
     paddingVertical: spacing.xl,
     paddingHorizontal: spacing.lg,
     gap: spacing.xs,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  heroTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: radii.pill,
+    backgroundColor: 'rgba(108, 123, 255, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(108, 123, 255, 0.28)',
+  },
+  tagDot: {
+    width: 5,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: colors.accent,
+  },
+  tagText: {
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    color: colors.accent,
   },
 });

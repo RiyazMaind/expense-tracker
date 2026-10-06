@@ -5,7 +5,7 @@ import { GlassSurface } from '@/components/glass/glass-surface';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { getCategory, type CategoryId } from '@/constants/categories';
-import { borders, colors, glass, radii, spacing } from '@/theme';
+import { borders, glass, radii, spacing } from '@/theme';
 import { formatInr } from '@/utils/currency';
 
 /**
@@ -92,8 +92,8 @@ export const ExpenseRow = memo(function ExpenseRow({
         accessibilityHint="Opens this expense to edit or delete it"
         style={({ pressed }) => [styles.pressable, pressed && styles.pressed]}
       >
-        <View style={styles.badge}>
-          <Icon name={meta.icon} size={20} color={colors.textSecondary} />
+        <View style={[styles.badge, { backgroundColor: meta.badgeBg, borderColor: meta.color + '33' }]}>
+          <Icon name={meta.icon} size={20} color={meta.color} />
         </View>
 
         <View style={styles.copy}>
@@ -134,7 +134,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
   },
   pressed: {
-    opacity: 0.7,
+    opacity: 0.8,
+    transform: [{ scale: 0.98 }],
   },
   badge: {
     width: 40,

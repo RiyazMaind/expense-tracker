@@ -28,6 +28,7 @@ export function BudgetProgressBar({
   testID?: string;
 }) {
   const fillColor = exceeded ? colors.destructive : nearlySpent ? colors.warning : colors.accent;
+  const pct = Math.round(Math.min(1, Math.max(0, fraction)) * 100);
 
   return (
     <View
@@ -42,12 +43,16 @@ export function BudgetProgressBar({
         style={[
           styles.fill,
           {
-            width: `${Math.round(Math.min(1, Math.max(0, fraction)) * 100)}%`,
+            width: `${pct}%`,
             backgroundColor: fillColor,
           },
         ]}
         testID={testID ? `${testID}-fill` : undefined}
-      />
+      >
+        {pct > 5 && (
+          <View style={[styles.glowDot, { backgroundColor: '#FFFFFF' }]} />
+        )}
+      </View>
     </View>
   );
 }
@@ -55,14 +60,26 @@ export function BudgetProgressBar({
 /** Track height and corner are shared so the fill cannot stick out of the track. */
 const styles = StyleSheet.create({
   track: {
-    height: 10,
+    height: 12,
     borderRadius: radii.pill,
     borderCurve: 'continuous',
     backgroundColor: glass.strong,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   fill: {
     height: '100%',
     borderRadius: radii.pill,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingRight: 2,
+  },
+  glowDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    opacity: 0.9,
   },
 });
