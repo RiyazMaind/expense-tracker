@@ -1,0 +1,14 @@
+Starting project at C:\Users\DboxAdmin\skill_projects\expense-tracker
+React Compiler enabled
+Starting Metro Bundler
+
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+› Opening exp://10.217.175.152:8081 on Small_Phone
+Waiting on http://localhost:8081
+
+Logs for your project will appear below.
+Android Bundled 34474ms node_modules\expo-router\entry.js (2015 modules)
+Android Bundled 13892ms node_modules\expo-router\entry.js (1383 modules)
+Android Bundled 115ms node_modules\expo-router\entry.js (1 module)
+Android Bundled 139ms node_modules\expo-router\entry.js (1 module)
+Android Bundled 188ms node_modules\expo-router\entry.js (1 module)
