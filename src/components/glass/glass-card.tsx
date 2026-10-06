@@ -14,6 +14,12 @@ export type GlassCardProps = PropsWithChildren<{
   /** Extra padding inside the card. */
   padded?: boolean;
   style?: StyleProp<ViewStyle>;
+  /**
+   * Overrides for the inner content column, applied after the padding and gap
+   * defaults. Lets a dense card tighten its own vertical rhythm without the
+   * shared card growing per-instance padding variants.
+   */
+  contentStyle?: StyleProp<ViewStyle>;
   testID?: string;
   accessibilityLabel?: string;
 }> &
@@ -33,6 +39,7 @@ export function GlassCard({
   level = 'default',
   padded = true,
   style,
+  contentStyle,
   testID,
   accessibilityLabel,
   radius = radii.lg,
@@ -53,7 +60,7 @@ export function GlassCard({
       accessibilityLabel={accessibilityLabel}
       style={style}
     >
-      <View style={[styles.inner, padded && styles.padded]}>
+      <View style={[styles.inner, padded && styles.padded, contentStyle]}>
         {hasHeader ? (
           <View style={styles.header}>
             {typeof title === 'string' ? (

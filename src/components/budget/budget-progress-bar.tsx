@@ -17,6 +17,7 @@ export function BudgetProgressBar({
   accessibilityLabel,
   accessibilityValue,
   testID,
+  thickness = 12,
 }: {
   /** 0 to 1, already capped. */
   fraction: number;
@@ -26,13 +27,19 @@ export function BudgetProgressBar({
   accessibilityLabel: string;
   accessibilityValue: { min: number; max: number; now: number; text: string };
   testID?: string;
+  /**
+   * Track height in points. Defaults to the Budget screen's 12; the Home
+   * card passes a thinner value so the bar reads as evidence for the amount
+   * above it rather than as a second focal point.
+   */
+  thickness?: number;
 }) {
   const fillColor = exceeded ? colors.destructive : nearlySpent ? colors.warning : colors.accent;
   const pct = Math.round(Math.min(1, Math.max(0, fraction)) * 100);
 
   return (
     <View
-      style={styles.track}
+      style={[styles.track, { height: thickness }]}
       accessible
       accessibilityRole="progressbar"
       accessibilityLabel={accessibilityLabel}
@@ -49,7 +56,11 @@ export function BudgetProgressBar({
         ]}
         testID={testID ? `${testID}-fill` : undefined}
       >
-        {pct > 5 && (
+        {/*
+          The trailing dot needs headroom to read as a bead on the fill; on a
+          hairline track it would simply fill the bar and add nothing.
+        */}
+        {pct > 5 && thickness >= 10 && (
           <View style={[styles.glowDot, { backgroundColor: '#FFFFFF' }]} />
         )}
       </View>
@@ -57,10 +68,9 @@ export function BudgetProgressBar({
   );
 }
 
-/** Track height and corner are shared so the fill cannot stick out of the track. */
+/** Track height comes from the `thickness` prop; the corner is shared with the fill. */
 const styles = StyleSheet.create({
   track: {
-    height: 12,
     borderRadius: radii.pill,
     borderCurve: 'continuous',
     backgroundColor: glass.strong,
