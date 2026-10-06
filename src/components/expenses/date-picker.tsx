@@ -2,6 +2,7 @@ import * as Haptics from 'expo-haptics';
 import { useMemo, useState } from 'react';
 import {
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -250,6 +251,12 @@ function CalendarSheet({
       <View style={styles.sheetPosition} pointerEvents="box-none">
         <GlassSurface
           level="strong"
+          // Android backdrop blur is off app-wide (dimezisBlurView crashes
+          // natively — see glass-surface.tsx), so the translucent 9% white
+          // fill showed the scrimmed page ghosting through the sheet. The
+          // solid fallback makes it a frosted card over the scrim instead;
+          // iOS keeps the real blur.
+          solid={Platform.OS === 'android'}
           radius={radii.xl}
           shadow="lg"
           highlighted
@@ -394,8 +401,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   chipIdle: {
-    backgroundColor: glass.subtle,
-    borderColor: borders.subtle,
+    // `glass.subtle` + `borders.subtle` read as almost nothing on the dark
+    // background — the chips looked transparent rather than glassy. One step
+    // up each keeps them translucent but gives the selector a visible body.
+    backgroundColor: glass.strong,
+    borderColor: borders.default,
   },
   chipSelected: {
     backgroundColor: colors.accentMuted,
@@ -438,9 +448,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: radii.md,
     borderCurve: 'continuous',
-    backgroundColor: glass.subtle,
+    // One glass step up: against the solid sheet a 4% white fill left the
+    // chevron pills nearly invisible.
+    backgroundColor: glass.strong,
     borderWidth: 1,
-    borderColor: borders.subtle,
+    borderColor: borders.default,
   },
   weekdayRow: {
     flexDirection: 'row',
