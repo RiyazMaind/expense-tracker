@@ -46,7 +46,7 @@ export default function BudgetScreen() {
   const [validateAmount, setValidateAmount] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
 
-  // See the analytics screen for why a counter and not a boolean.
+  // See the Home dashboard for why a counter and not a boolean.
   const latestLoad = useRef(0);
 
   const load = useCallback(async () => {

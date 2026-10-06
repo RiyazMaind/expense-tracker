@@ -161,8 +161,6 @@ export default function SettingsScreen() {
         Budget's door. It left the bottom bar when the bar was cut back to
         Home | Add | Expenses (docs/screens.md lists "Monthly budget" among the
         Settings options), and without this row the screen would be unreachable.
-        The row itself matches the Analytics link on Home, so the two "this lives
-        elsewhere now" affordances in the app read as one pattern.
       */}
       <GlassCard
         title="Monthly budget"

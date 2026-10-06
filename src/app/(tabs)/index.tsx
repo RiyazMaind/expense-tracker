@@ -1,49 +1,147 @@
 import { router, useFocusEffect } from 'expo-router';
-import { useCallback } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { useCallback, useRef, useState } from 'react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
+import { CategoryBreakdown } from '@/components/analytics/category-breakdown';
+import { DailyTrendChart } from '@/components/analytics/daily-trend-chart';
+import { TotalsHero } from '@/components/analytics/totals-hero';
 import { StatTile } from '@/components/dashboard/stat-tile';
 import { GlassCard } from '@/components/glass/glass-card';
 import { ButtonLabel, GlassButton } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Icon } from '@/components/ui/icon';
 import { Screen } from '@/components/ui/screen';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { SettingsIconButton } from '@/components/ui/settings-icon-button';
-import { Text } from '@/components/ui/text';
+import { getDatabase } from '@/database/database';
+import { AnalyticsRepository } from '@/database/repositories/analytics-repository';
 import { useExpenseStore } from '@/store/expenseStore';
-import { colors, spacing, touchTarget } from '@/theme';
+import { colors, spacing } from '@/theme';
+import {
+  buildAnalyticsReport,
+  resolveAnalyticsPeriods,
+  type AnalyticsReport,
+} from '@/utils/analytics';
 import { formatInr } from '@/utils/currency';
+import { formatMonthYear, formatShortDay, fromDateKey } from '@/utils/dates';
 
 /**
- * Home.
+ * Home — the overview and the breakdown, on one screen.
  *
- * Composition answers the three questions docs/product.md requires from the
- * dashboard — today, this week, this month — with one hero figure and two
- * supporting tiles, then hands off to the empty state.
+ * The month total is the hero, today and this week sit under it, and the daily
+ * trend and category breakdown follow. docs/product.md asks the dashboard for
+ * today/week/month and docs/screens.md asks analytics for the daily chart, the
+ * category breakdown, the daily average and the highest-spending day — all of it
+ * is here, because sending the user to a second screen to read their own numbers
+ * meant the two halves of the same story could disagree about what a week is.
  *
- * The figures come from SQLite via the store. The store holds the last summary it
- * read so this screen renders real numbers immediately on the way back from the
- * entry screen, but it is a cache, not the source of truth: `useFocusEffect`
- * re-reads the aggregate every time the screen comes forward, which is also what
- * makes the totals correct across a midnight rollover without a timer.
+ * Two reads feed it. Period totals come from the store, which caches the last
+ * summary so the figures are on screen immediately on the way back from the
+ * entry screen. The trend and the category breakdown come from a local report
+ * re-read on every focus; it stays local because it is derived and only this
+ * screen shows it (vercel-react-native-skills/rules/react-state-minimize.md).
+ *
+ * One hero, deliberately: docs/design-system.md puts large amounts at the top of
+ * the hierarchy and glassmorphism-design forbids two loudest things at once, so
+ * every other figure is a tile. Nothing derived is stored — `buildAnalyticsReport`
+ * runs on query results and SQLite keeps only the rows
+ * (docs/architecture.md, Database Rule).
  */
 export default function HomeScreen() {
   const summary = useExpenseStore((state) => state.summary);
   const loadSummary = useExpenseStore((state) => state.loadSummary);
 
+  const [report, setReport] = useState<AnalyticsReport | null>(null);
+  const [reportStatus, setReportStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+
+  /*
+    Focus can arrive again before the previous read has finished, and two reads
+    need not finish in the order they started. Counting them lets the older one
+    be dropped on arrival instead of overwriting newer numbers with numbers that
+    were already superseded.
+  */
+  const latestLoad = useRef(0);
+
+  const loadReport = useCallback(async () => {
+    const loadId = latestLoad.current + 1;
+
+    latestLoad.current = loadId;
+
+    try {
+      /*
+        One clock reading for everything. `resolveAnalyticsPeriods` turns it into
+        the three ranges and every query below resolves against that same
+        reading, so a month boundary cannot fall between them and produce totals
+        that disagree with the bars beside them.
+      */
+      const reference = new Date();
+      const periods = resolveAnalyticsPeriods(reference);
+
+      const repository = new AnalyticsRepository(await getDatabase());
+
+      const [totals, categoryTotals, dailyTotals] = await Promise.all([
+        repository.getPeriodTotals(reference),
+        repository.getCategoryTotals(periods.month),
+        repository.getDailyTotals(periods.trend),
+      ]);
+
+      if (latestLoad.current !== loadId) {
+        return;
+      }
+
+      setReport(
+        buildAnalyticsReport({
+          periods,
+          weekPaise: totals.weekPaise,
+          monthPaise: totals.monthPaise,
+          expenseCount: totals.expenseCount,
+          categoryTotals,
+          dailyTotals,
+        }),
+      );
+      setReportStatus('ready');
+    } catch (error) {
+      if (latestLoad.current !== loadId) {
+        return;
+      }
+
+      /*
+        The last good report is deliberately left in place. A failed refresh
+        should keep showing the figures the user last saw rather than wiping a
+        working screen back to an error.
+      */
+      console.warn('[home] could not load the spending breakdown', error);
+      setReportStatus('error');
+    }
+  }, []);
+
   /*
     Focus, not mount. This screen stays mounted while the user is in
-    add-expense, so a one-shot load on mount would leave the totals describing
-    the moment the app opened rather than the moment they looked.
+    add-expense, so a one-shot load on mount would leave the figures describing
+    the moment the app opened rather than the moment they looked. It is also what
+    makes them correct across a midnight rollover, with no timer.
   */
   useFocusEffect(
     useCallback(() => {
       loadSummary();
-    }, [loadSummary]),
+      loadReport();
+    }, [loadSummary, loadReport]),
   );
 
   const hasExpenses = (summary?.expenseCount ?? 0) > 0;
+
+  const periodLabel =
+    report?.days[0] != null ? formatMonthYear(fromDateKey(report.days[0].dateKey)) : '';
+
+  /*
+    The one supporting line under the month total. Read from the report rather
+    than the summary because "days with spending" is a property of the series,
+    not of the aggregate.
+  */
+  const monthCaption =
+    report != null && report.hasMonthSpending ? monthCaptionText(report) : undefined;
+
+  const busiestDayLabel =
+    report?.busiestDay != null ? formatShortDay(fromDateKey(report.busiestDay.dateKey)) : '—';
 
   return (
     <Screen testID="screen-home">
@@ -52,67 +150,53 @@ export default function HomeScreen() {
         subtitle="Your spending at a glance"
         /*
           Adding lives in the centre of the tab bar; this slot carries the
-          Settings shortcut instead.
+          Settings shortcut.
         */
         action={<SettingsIconButton testID="home-settings" />}
       />
 
-      <GlassCard testID="card-today" padded={false}>
-        <View style={styles.hero}>
-          <Text variant="label" tone="secondary">
-            Spent today
-          </Text>
-          <Text variant="display" tabular testID="today-total">
-            {formatInr(summary?.todayPaise ?? 0)}
-          </Text>
-        </View>
-      </GlassCard>
+      {/*
+        The month is the number the budget is measured against, so it takes the
+        hero and everything below is context for it.
+      */}
+      <TotalsHero
+        label="Spent this month"
+        amountPaise={summary?.monthPaise ?? report?.monthPaise ?? 0}
+        caption={monthCaption}
+        testID="home-hero"
+      />
 
       <View style={styles.tiles}>
+        <StatTile
+          label="Today"
+          value={formatInr(summary?.todayPaise ?? 0)}
+          testID="tile-today"
+        />
         <StatTile
           label="This week"
           value={formatInr(summary?.weekPaise ?? 0)}
           testID="tile-week"
         />
+      </View>
+
+      <View style={styles.tiles}>
         <StatTile
-          label="This month"
-          value={formatInr(summary?.monthPaise ?? 0)}
-          testID="tile-month"
+          label="Daily average"
+          value={formatInr(report?.averagePerDayPaise ?? 0)}
+          testID="tile-average"
         />
+        <StatTile label="Busiest day" value={busiestDayLabel} testID="tile-busiest" />
       </View>
 
       {/*
-        Analytics is no longer a tab, so Home carries its door. The row reads
-        as a question answered rather than a link label: "Daily spending,
-        categories and trends".
-      */}
-      <Pressable
-        testID="home-analytics-link"
-        accessibilityRole="button"
-        accessibilityLabel="Open analytics"
-        accessibilityHint="Shows daily spending, categories and trends"
-        onPress={() => router.push('/analytics')}
-        style={styles.analyticsLink}
-      >
-        <Icon name="chart" size={18} color={colors.accent} />
-        <Text variant="body" tone="secondary" style={styles.analyticsLinkLabel}>
-          Daily spending, categories & trends
-        </Text>
-        <Icon name="chevronRight" size={16} color={colors.textTertiary} />
-      </Pressable>
-
-      {/*
         Driven by the all-time count rather than by today's figure: someone who
-        logged an expense last month should not be told they have none. While the
-        first read is in flight there is nothing to assert either way, and this
-        shows the empty state — whose CTA restates the header action for a
-        first-run user who has not noticed it yet.
+        logged an expense last month should not be told they have none.
       */}
       {!hasExpenses ? (
         <EmptyState
           testID="empty-home"
           title="No expenses yet"
-          body="Start tracking your spending by adding your first expense."
+          body="Start tracking your spending by adding your first expense. Your daily trend and category breakdown build themselves from here."
           action={
             <GlassButton
               accessibilityLabel="Add expense"
@@ -124,29 +208,74 @@ export default function HomeScreen() {
             </GlassButton>
           }
         />
+      ) : report == null && reportStatus === 'loading' ? (
+        <View style={styles.centered} testID="home-loading">
+          <ActivityIndicator color={colors.accent} />
+        </View>
+      ) : report == null && reportStatus === 'error' ? (
+        <EmptyState
+          testID="home-error"
+          title="Could not read your spending"
+          body="Your data is still on this device. Try again in a moment."
+          action={
+            <GlassButton
+              accessibilityLabel="Retry reading your spending"
+              accessibilityHint="Reads the spending breakdown again"
+              onPress={loadReport}
+              testID="home-retry"
+            >
+              <ButtonLabel>Try again</ButtonLabel>
+            </GlassButton>
+          }
+        />
+      ) : report != null && report.hasMonthSpending ? (
+        <>
+          <DailyTrendChart
+            periodLabel={periodLabel}
+            days={report.days}
+            monthPaise={report.monthPaise}
+            busiestDay={report.busiestDay}
+            daysWithSpending={report.daysWithSpending}
+            testID="home-trend-card"
+          />
+
+          <CategoryBreakdown
+            slices={report.categories}
+            totalPaise={report.monthPaise}
+            periodLabel={periodLabel}
+            testID="home-categories"
+          />
+        </>
+      ) : report != null ? (
+        /*
+          Expenses exist, none of them this month. A chart of empty columns would
+          communicate nothing, so the section is replaced by the one sentence
+          that explains where the numbers would have come from.
+        */
+        <GlassCard
+          title="Nothing logged this month"
+          subtitle={`Nothing recorded in ${periodLabel} yet. The trend and the category breakdown fill in as you add expenses.`}
+          testID="home-no-month-spending"
+        />
       ) : null}
     </Screen>
   );
 }
 
+/** The one supporting line under the month total. */
+function monthCaptionText(report: AnalyticsReport): string {
+  const days = report.daysWithSpending;
+
+  return `${days} ${days === 1 ? 'day' : 'days'} with spending`;
+}
+
 const styles = StyleSheet.create({
-  hero: {
-    paddingVertical: spacing.xl,
-    paddingHorizontal: spacing.lg,
-    gap: spacing.xs,
-  },
   tiles: {
     flexDirection: 'row',
     gap: spacing.md,
   },
-  analyticsLink: {
-    flexDirection: 'row',
+  centered: {
+    paddingTop: spacing.xxl,
     alignItems: 'center',
-    gap: spacing.sm,
-    paddingVertical: spacing.sm,
-    minHeight: touchTarget.min,
-  },
-  analyticsLinkLabel: {
-    flex: 1,
   },
 });

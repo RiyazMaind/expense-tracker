@@ -4,7 +4,7 @@ import { resolveDashboardPeriods, type DateRange } from '@/utils/calculations';
 import { addDays, fromDateKey, toDateKey } from '@/utils/dates';
 
 /**
- * Turning aggregated SQLite rows into the numbers the Analytics screen shows.
+ * Turning aggregated SQLite rows into the numbers the Home dashboard shows.
  *
  * The split with `analytics-repository.ts` is deliberate: SQL decides *which*
  * rows and sums (cheap, exact, done once per query) and this module decides what

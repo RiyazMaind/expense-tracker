@@ -7,12 +7,20 @@ Purpose: give an immediate financial overview.
 Content:
 
 - Greeting/header
-- Current month total
+- Current month total (the hero figure)
 - Today's total
 - Weekly total
+- Daily average
+- Highest spending day
+- Daily spending trend
+- Category breakdown
 - Budget progress
 - Recent expenses
 - Add Expense action
+
+The dashboard also carries what used to be a separate Analytics screen
+(section 4), so the figures and the charts that describe them are read together
+rather than on two screens.
 
 Primary question answered:
 
@@ -56,18 +64,14 @@ Use FlatList for scalability.
 
 ## 4. Analytics
 
-Purpose: understand spending patterns.
+Merged into Home (section 1); there is no separate analytics screen.
 
-Sections:
+The dashboard shows the whole set: current period total, daily spending chart,
+category breakdown, daily average and highest spending day. Keeping them on the
+screen the user already opens means the totals and the trend they explain can
+never disagree about which days a week contains.
 
-- Current period total
-- Daily spending chart
-- Category breakdown
-- Average daily spending
-- Highest spending day
-- Previous-month comparison
-
-Weekly and monthly views should be easy to switch.
+Previous-month comparison is not implemented.
 
 ## 5. Budget
 

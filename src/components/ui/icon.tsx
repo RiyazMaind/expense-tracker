@@ -191,7 +191,7 @@ const dots: Partial<Record<IconName, readonly { x: number; y: number; weight: nu
  * reaches 16.7 x 12.6. Given one shared box, the chart and the sliders
  * therefore rendered roughly a third smaller than the house — measured on
  * Android at 360dp as 12.5pt and 13pt of ink against the house's 18pt — which
- * made the Analytics and Settings tabs look unfinished.
+ * made them read as unfinished beside it at any size.
  *
  * The `x`/`y` offsets matter as much as the extents. The bar chart's ink is
  * bottom-weighted: its baseline sits at 19.6 and its tallest bar only reaches
