@@ -5,6 +5,7 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { CategoryBreakdown } from '@/components/analytics/category-breakdown';
 import { DailyTrendChart } from '@/components/analytics/daily-trend-chart';
 import { TotalsHero } from '@/components/analytics/totals-hero';
+import { BudgetInsight } from '@/components/budget/budget-insight';
 import { StatTile } from '@/components/dashboard/stat-tile';
 import { GlassCard } from '@/components/glass/glass-card';
 import { ButtonLabel, GlassButton } from '@/components/ui/button';
@@ -14,6 +15,7 @@ import { ScreenHeader } from '@/components/ui/screen-header';
 import { SettingsIconButton } from '@/components/ui/settings-icon-button';
 import { getDatabase } from '@/database/database';
 import { AnalyticsRepository } from '@/database/repositories/analytics-repository';
+import { BudgetRepository } from '@/database/repositories/budget-repository';
 import { useExpenseStore } from '@/store/expenseStore';
 import { colors, spacing } from '@/theme';
 import {
@@ -21,6 +23,12 @@ import {
   resolveAnalyticsPeriods,
   type AnalyticsReport,
 } from '@/utils/analytics';
+import {
+  computeBudgetOutlook,
+  currentMonthKey,
+  formatMonthKey,
+  type BudgetOutlook,
+} from '@/utils/budget';
 import { formatInr } from '@/utils/currency';
 import { formatMonthYear, formatShortDay, fromDateKey } from '@/utils/dates';
 
@@ -36,9 +44,13 @@ import { formatMonthYear, formatShortDay, fromDateKey } from '@/utils/dates';
  *
  * Two reads feed it. Period totals come from the store, which caches the last
  * summary so the figures are on screen immediately on the way back from the
- * entry screen. The trend and the category breakdown come from a local report
- * re-read on every focus; it stays local because it is derived and only this
- * screen shows it (vercel-react-native-skills/rules/react-state-minimize.md).
+ * entry screen. The trend, the category breakdown and the budget outlook come
+ * from a local report re-read on every focus; it stays local because it is
+ * derived and only this screen shows it
+ * (vercel-react-native-skills/rules/react-state-minimize.md). The budget row
+ * rides along on that same load so one clock reading picks the month the
+ * budget describes and the totals that measure it — two reads could straddle
+ * a month boundary and pair last month's plan with this month's spending.
  *
  * One hero, deliberately: docs/design-system.md puts large amounts at the top of
  * the hierarchy and glassmorphism-design forbids two loudest things at once, so
@@ -52,6 +64,17 @@ export default function HomeScreen() {
 
   const [report, setReport] = useState<AnalyticsReport | null>(null);
   const [reportStatus, setReportStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+
+  /*
+    The budget snapshot: which month it describes, and its outlook — or `null`
+    outlook for "no budget set for that month". The wrapper itself is `null`
+    until the first successful read, so an unloaded budget is never mistaken
+    for an unset one.
+  */
+  const [budget, setBudget] = useState<{
+    monthKey: string;
+    outlook: BudgetOutlook | null;
+  } | null>(null);
 
   /*
     Focus can arrive again before the previous read has finished, and two reads
@@ -75,19 +98,37 @@ export default function HomeScreen() {
       */
       const reference = new Date();
       const periods = resolveAnalyticsPeriods(reference);
+      const monthKey = currentMonthKey(reference);
 
-      const repository = new AnalyticsRepository(await getDatabase());
+      const database = await getDatabase();
+      const repository = new AnalyticsRepository(database);
 
-      const [totals, categoryTotals, dailyTotals] = await Promise.all([
+      const [totals, categoryTotals, dailyTotals, budgetRow] = await Promise.all([
         repository.getPeriodTotals(reference),
         repository.getCategoryTotals(periods.month),
         repository.getDailyTotals(periods.trend),
+        new BudgetRepository(database).getBudget(monthKey),
       ]);
 
       if (latestLoad.current !== loadId) {
         return;
       }
 
+      /*
+        An `if` rather than the obvious ternary: this project's Babel React
+        Compiler cannot lower a value block inside a `try` ("Support value
+        blocks ... within a try/catch statement") and fails the bundle — while
+        typecheck, lint and the Node suite all pass on it, the same gap
+        expenses.tsx documents for `finally`. Statements inside `try` are fine;
+        conditional *expressions* are not.
+      */
+      let outlook: BudgetOutlook | null = null;
+
+      if (budgetRow != null) {
+        outlook = computeBudgetOutlook(budgetRow.amountMinor, totals.monthPaise, reference);
+      }
+
+      setBudget({ monthKey, outlook });
       setReport(
         buildAnalyticsReport({
           periods,
@@ -257,6 +298,39 @@ export default function HomeScreen() {
           subtitle={`Nothing recorded in ${periodLabel} yet. The trend and the category breakdown fill in as you add expenses.`}
           testID="home-no-month-spending"
         />
+      ) : null}
+
+      {/*
+        Budget progress last, in the order docs/screens.md lists it: it measures
+        the month total above, so it belongs after the charts that break that
+        total down rather than between the hero and its supporting tiles. It
+        shows whenever expenses exist — even a month with no spending still has
+        a truthful "0% used, everything left" — and steps aside entirely on the
+        first-run empty state, where the one thing to do is log an expense.
+      */}
+      {hasExpenses && budget != null ? (
+        budget.outlook != null ? (
+          <BudgetInsight
+            outlook={budget.outlook}
+            monthKey={budget.monthKey}
+            testID="home-budget"
+          />
+        ) : (
+          <GlassCard
+            title="Budget progress"
+            subtitle={`No budget set for ${formatMonthKey(budget.monthKey)}`}
+            testID="home-budget-empty"
+          >
+            <GlassButton
+              accessibilityLabel="Set a monthly budget"
+              accessibilityHint="Opens the budget screen to set this month's budget"
+              onPress={() => router.push('/budget')}
+              testID="home-budget-set"
+            >
+              <ButtonLabel>Set budget</ButtonLabel>
+            </GlassButton>
+          </GlassCard>
+        )
       ) : null}
     </Screen>
   );
