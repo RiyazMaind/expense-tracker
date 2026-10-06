@@ -1,7 +1,13 @@
-import { router } from 'expo-router';
+import { router, usePathname } from 'expo-router';
 import { TabList, TabSlot, TabTrigger, Tabs } from 'expo-router/ui';
 import * as Haptics from 'expo-haptics';
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GlassSurface } from '@/components/glass/glass-surface';
@@ -14,7 +20,8 @@ import {
   navBarPosition,
 } from '@/components/navigation/glass-nav-bar';
 import { Icon } from '@/components/ui/icon';
-import { colors, navigation, radii, touchTarget } from '@/theme';
+import { useReducedMotion } from '@/hooks/use-reduced-motion';
+import { colors, motion, navigation, radii, touchTarget } from '@/theme';
 
 /**
  * Tab group layout.
@@ -35,6 +42,9 @@ import { colors, navigation, radii, touchTarget } from '@/theme';
  */
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
+  const pathname = usePathname();
+
+  const activeIndex = pathname.startsWith('/expenses') ? 1 : 0;
 
   // Floats above the home indicator / gesture bar.
   const position = [navBarPosition, { bottom: navigation.bottomOffset + insets.bottom }];
@@ -43,17 +53,27 @@ export default function TabsLayout() {
     <Tabs style={styles.root}>
       <TabSlot />
 
-      <GlassNavBar style={position} />
+      <GlassNavBar style={position} activeIndex={activeIndex} />
 
       <TabList style={[styles.list, position]}>
         <TabTrigger name={homeTab.name} href={homeTab.href} asChild style={styles.trigger}>
-          <NavItem name={homeTab.name} label={homeTab.label} icon={homeTab.icon} />
+          <NavItem
+            name={homeTab.name}
+            label={homeTab.label}
+            icon={homeTab.icon}
+            isFocused={activeIndex === 0}
+          />
         </TabTrigger>
 
         <TabCenterSlot />
 
         <TabTrigger name={expensesTab.name} href={expensesTab.href} asChild style={styles.trigger}>
-          <NavItem name={expensesTab.name} label={expensesTab.label} icon={expensesTab.icon} />
+          <NavItem
+            name={expensesTab.name}
+            label={expensesTab.label}
+            icon={expensesTab.icon}
+            isFocused={activeIndex === 1}
+          />
         </TabTrigger>
       </TabList>
 
@@ -98,7 +118,31 @@ function TabCenterSlot() {
  * `pointerEvents: 'box-none'` lets taps either side reach the tabs underneath
  * while the button's own 48dp circle still receives its touches.
  */
-function NavAddButton({ style }: { style: StyleProp<ViewStyle> }) {
+function NavAddButton({ style }: { style?: StyleProp<ViewStyle> }) {
+  const reduceMotion = useReducedMotion();
+  const pressed = useSharedValue(0);
+
+  const buttonAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        scale: withTiming(pressed.get() ? 0.92 : 1, {
+          duration: reduceMotion ? 0 : motion.instant,
+        }),
+      },
+    ],
+  }));
+
+  const iconAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        rotate: withSpring(pressed.get() ? '45deg' : '0deg', {
+          damping: 15,
+          stiffness: 200,
+        }),
+      },
+    ],
+  }));
+
   return (
     <View style={[styles.addOverlay, style]}>
       <Pressable
@@ -107,17 +151,27 @@ function NavAddButton({ style }: { style: StyleProp<ViewStyle> }) {
         accessibilityLabel="Add expense"
         accessibilityHint="Opens the add expense screen"
         onPress={openAddExpense}
+        onPressIn={() => {
+          pressed.set(withTiming(1, { duration: motion.instant }));
+        }}
+        onPressOut={() => {
+          pressed.set(withTiming(0, { duration: motion.fast }));
+        }}
         hitSlop={6}
       >
-        <GlassSurface
-          solid
-          blurred={false}
-          radius={radii.pill}
-          shadow="md"
-          style={styles.addCircle}
-        >
-          <Icon name="plus" size={22} color={colors.textOnAccent} testID="nav-add-icon" />
-        </GlassSurface>
+        <Animated.View style={[styles.addHalo, buttonAnimatedStyle]}>
+          <GlassSurface
+            solid
+            blurred={false}
+            radius={radii.pill}
+            shadow="md"
+            style={styles.addCircle}
+          >
+            <Animated.View style={iconAnimatedStyle}>
+              <Icon name="plus" size={22} color={colors.textOnAccent} testID="nav-add-icon" />
+            </Animated.View>
+          </GlassSurface>
+        </Animated.View>
       </Pressable>
     </View>
   );
@@ -166,14 +220,29 @@ const styles = StyleSheet.create({
     // Lets touches pass through to the triggers except on the button itself.
     pointerEvents: 'box-none',
   },
+  addHalo: {
+    width: 52,
+    height: 52,
+    borderRadius: radii.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(108, 123, 255, 0.20)',
+    borderWidth: 1,
+    borderColor: 'rgba(108, 123, 255, 0.38)',
+    shadowColor: colors.accent,
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 8,
+  },
   addCircle: {
-    width: 48,
-    height: 48,
+    width: 42,
+    height: 42,
     borderRadius: radii.pill,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.accent,
-    minWidth: touchTarget.min,
-    minHeight: touchTarget.navItemMinHeight,
+    minWidth: touchTarget.min - 2,
+    minHeight: touchTarget.min - 2,
   },
 });

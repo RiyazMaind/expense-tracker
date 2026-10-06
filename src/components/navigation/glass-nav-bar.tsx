@@ -1,15 +1,31 @@
-import type { Href } from 'expo-router';
-import * as Haptics from 'expo-haptics';
-import { Pressable, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { useEffect, useState } from "react";
+import * as Haptics from "expo-haptics";
+import type { Href } from "expo-router";
+import { router } from "expo-router";
+import {
+  Pressable,
+  StyleSheet,
+  View,
+  type StyleProp,
+  type ViewStyle,
+} from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 
-import { GlassSurface } from '@/components/glass/glass-surface';
-import { Icon, type IconName } from '@/components/ui/icon';
-import { Text } from '@/components/ui/text';
-import { useReducedMotion } from '@/hooks/use-reduced-motion';
-import { blur, colors, fontWeight, motion, radii, touchTarget } from '@/theme';
+import { GlassSurface } from "@/components/glass/glass-surface";
+import { Icon, type IconName } from "@/components/ui/icon";
+import { Text } from "@/components/ui/text";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { blur, colors, fontWeight, motion, radii, touchTarget } from "@/theme";
 
-/** Tab definitions. `name` matches the route file name; `href` the route. */
+/* -------------------------------------------------------------------------- */
+/* Navigation definitions                                                     */
+/* -------------------------------------------------------------------------- */
+
 export type TabDefinition = {
   name: string;
   href: Href;
@@ -17,133 +33,140 @@ export type TabDefinition = {
   icon: IconName;
 };
 
-/** Home — the left-hand tab. */
-export const homeTab: TabDefinition = { name: 'index', href: '/', label: 'Home', icon: 'home' };
-
-/** Expenses — the right-hand tab. */
-export const expensesTab: TabDefinition = {
-  name: 'expenses',
-  href: '/expenses',
-  label: 'Expenses',
-  icon: 'receipt',
+export const homeTab: TabDefinition = {
+  name: "index",
+  href: "/",
+  label: "Home",
+  icon: "home",
 };
 
-/**
- * The bar's tabs, left to right.
- *
- * Only these two navigation destinations are tabs. Add is not one — it pushes a
- * route rather than switching screens — and Analytics, Budget and Settings left
- * the bar for the Home link, the Settings screen and the header icon
- * respectively. `(tabs)/_layout.tsx` lays the two tabs out on the outer thirds
- * with the Add action centred in the middle third.
- */
-export const tabs: readonly [TabDefinition, TabDefinition] = [homeTab, expensesTab];
+export const expensesTab: TabDefinition = {
+  name: "expenses",
+  href: "/expenses",
+  label: "Expenses",
+  icon: "receipt",
+};
 
-/**
- * The visual half of the floating glass bottom navigation: a blurred glass pill
- * that floats above the safe area.
- *
- * The bar itself is the only surface in it. Tabs are flat — icon over label,
- * nothing drawn between them or behind them — so the glass is the only material
- * in the component and the selected tab is distinguished by brightness alone.
- *
- * This is deliberately separate from the interactive list. Expo Router's
- * headless `Tabs` discovers routes by walking its direct children and only
- * recurses into fragments and `TabList`, so the `TabList` and its `TabTrigger`s
- * must be rendered as direct children of `Tabs` (see `(tabs)/_layout.tsx`).
- * The bar is therefore layered: this glass surface provides the material, and
- * a transparent `TabList` sits on top of it to receive touches.
- *
- * Built on `expo-router/ui` rather than `NativeTabs` because the design system
- * calls for a bar that floats above the safe area on its own glass surface; a
- * native tab bar cannot be styled that way (product decision 4).
- */
-export function GlassNavBar({ style }: { style: StyleProp<ViewStyle> }) {
-  return (
-    <GlassSurface
-      level="subtle"
-      borderLevel="subtle"
-      radius={radii.pill}
-      intensity={blur.navigation}
-      shadow="md"
-      style={[styles.bar, style]}
-      testID="glass-nav-bar"
-    />
-  );
-}
+export const tabs: readonly [TabDefinition, TabDefinition] = [
+  homeTab,
+  expensesTab,
+];
 
-/**
- * Bar metrics.
- *
- * Deliberately local to this component rather than added to `navigation` in the
- * theme, because these describe this one bar's internal rhythm: they are tuned
- * against two tabs centred in the outer thirds with the Add action between them
- * on a 360dp screen, and nothing else in the app needs them.
- *
- * - `HEIGHT` is 52. A tab's content block is 35 (19 icon + 3 gap + 13 label), so
- *   the bar leaves ~8.5pt of glass above and below it — premium, not cramped —
- *   while staying under the 56 a native bar uses.
- * - `HORIZONTAL_MARGIN` of 14 gives the bar a deliberate float off the screen
- *   edges while still leaving each outer third wide enough for its label.
- * - `ICON_LABEL_GAP` of 3 is what "tight but not cramped" looks like: at 5 the
- *   measured gap between the icon's ink and the label's glyph was 9pt, which
- *   read as two separate elements rather than one tab.
- */
-const HEIGHT = 52;
-const HORIZONTAL_MARGIN = 14;
-const ICON_SIZE = 19;
+/* -------------------------------------------------------------------------- */
+/* Layout metrics                                                             */
+/* -------------------------------------------------------------------------- */
+
+const HEIGHT = 64;
+const HORIZONTAL_MARGIN = 16;
+const ICON_SIZE = 20;
 const ICON_LABEL_GAP = 3;
 
-/** Positioning for both the glass surface and the transparent `TabList`. */
+const ADD_BUTTON_SIZE = 54;
+
+/**
+ * Shared absolute positioning for the floating navbar.
+ */
 export const navBarPosition: ViewStyle = {
-  position: 'absolute',
+  position: "absolute",
   left: HORIZONTAL_MARGIN,
   right: HORIZONTAL_MARGIN,
 };
 
-/** Bar height, shared with the transparent `TabList` laid over the surface. */
 export const navBarHeight = HEIGHT;
 
-/**
- * Visual tab: icon, label and the active state.
- *
- * `TabTrigger asChild` renders this as the trigger element but does not forward
- * selected state, so it reads its own state through `useTabTrigger`.
- *
- * Because `TabTrigger` renders via a Radix slot, this component's `onPress` is
- * composed with the trigger's own handler, so navigation still happens while
- * the haptic fires here.
- */
+/* -------------------------------------------------------------------------- */
+/* Active Tab Indicator                                                       */
+/* -------------------------------------------------------------------------- */
+
+export function ActiveTabIndicator({
+  activeIndex = 0,
+}: {
+  activeIndex?: number;
+}) {
+  const [width, setWidth] = useState(0);
+  const reduceMotion = useReducedMotion();
+  const translateX = useSharedValue(0);
+
+  const slotWidth = width > 0 ? (width - 12) / 3 : 0;
+  const targetX = activeIndex === 0 ? 6 : 6 + slotWidth * 2;
+
+  useEffect(() => {
+    if (width > 0) {
+      if (reduceMotion) {
+        translateX.set(targetX);
+      } else {
+        translateX.set(
+          withSpring(targetX, {
+            damping: 18,
+            stiffness: 190,
+            mass: 0.8,
+          }),
+        );
+      }
+    }
+  }, [activeIndex, reduceMotion, targetX, translateX, width]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.get() }],
+    width: slotWidth,
+    opacity: width > 0 ? 1 : 0,
+  }));
+
+  return (
+    <View
+      style={StyleSheet.absoluteFill}
+      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+      pointerEvents="none"
+    >
+      {width > 0 && (
+        <Animated.View style={[styles.indicatorPill, animatedStyle]} />
+      )}
+    </View>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Glass surface                                                              */
+/* -------------------------------------------------------------------------- */
+
+export function GlassNavBar({
+  style,
+  activeIndex = 0,
+}: {
+  style?: StyleProp<ViewStyle>;
+  activeIndex?: number;
+}) {
+  return (
+    <GlassSurface
+      level="strong"
+      borderLevel="strong"
+      radius={radii.pill}
+      intensity={blur.navigation}
+      shadow="md"
+      highlighted
+      style={[styles.bar, style]}
+      testID="glass-nav-bar"
+    >
+      <ActiveTabIndicator activeIndex={activeIndex} />
+    </GlassSurface>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Standard navigation item                                                   */
+/* -------------------------------------------------------------------------- */
+
 export type NavItemProps = {
   name: string;
   label: string;
   icon: IconName;
-  /**
-   * Injected by `TabTrigger asChild`: the tab's selected state.
-   * `TabTrigger` passes `isFocused` to its child element, which is the most
-   * direct source of truth available here.
-   */
   isFocused?: boolean;
-  /** Injected by `TabTrigger asChild`: performs the navigation. */
   onPress?: (event: unknown) => void;
-  /** Injected by `TabTrigger asChild`. */
   onLongPress?: (event: unknown) => void;
-  /** Injected by `TabTrigger asChild`; not a valid Pressable prop. */
   href?: unknown;
   style?: StyleProp<ViewStyle>;
 };
 
-/**
- * Visual tab: icon, label and an animated active pill.
- *
- * `TabTrigger asChild` clones this element and injects `isFocused`, `onPress`
- * and `onLongPress` through a Radix slot. Those props MUST be accepted and
- * forwarded to the `Pressable` — if they are swallowed, the trigger has no
- * press handler and tab navigation silently stops working.
- *
- * `href`, `isFocused` and `name` are deliberately not spread onto the
- * `Pressable`, since they are not valid React Native props.
- */
 export function NavItem({
   name,
   label,
@@ -154,50 +177,48 @@ export function NavItem({
   style,
 }: NavItemProps) {
   const reduceMotion = useReducedMotion();
-
   const selected = isFocused ?? false;
 
-  /**
-   * Press feedback, and the only animation left in the bar.
-   *
-   * There is no active indicator to scale any more, so this drives a plain
-   * opacity dip on the icon and label. It is feedback, not decoration — it
-   * acknowledges the touch without adding a shape behind it.
-   */
   const pressed = useSharedValue(0);
 
   const contentStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(pressed.get() ? 0.55 : 1, {
+    opacity: withTiming(pressed.get() ? 0.6 : 1, {
       duration: reduceMotion ? 0 : motion.instant,
     }),
+    transform: [
+      {
+        scale: withTiming(pressed.get() ? 0.94 : 1, {
+          duration: reduceMotion ? 0 : motion.instant,
+        }),
+      },
+    ],
   }));
 
-  const handlePress = (event: Parameters<NonNullable<NavItemProps['onPress']>>[0]) => {
-    // Only confirm an actual tab change, not a re-tap of the current tab.
+  const iconStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        scale: reduceMotion
+          ? selected
+            ? 1.08
+            : 1.0
+          : withSpring(selected ? 1.14 : 1.0, {
+              damping: 14,
+              stiffness: 180,
+            }),
+      },
+    ],
+  }));
+
+  const handlePress = (
+    event: Parameters<NonNullable<NavItemProps["onPress"]>>[0],
+  ) => {
     if (!selected) {
-      Haptics.selectionAsync().catch(() => {
-        // Haptics are unavailable on web and some devices. Never block the tap.
-      });
+      Haptics.selectionAsync().catch(() => {});
     }
-    // Hand off to the trigger, which performs the actual navigation.
+
     onPress?.(event);
   };
 
-  /**
-   * Active state is carried by brightness and weight alone.
-   *
-   * Monochrome by intent: the bar is a single glass surface, so a filled pill
-   * behind one tab read as a bubble sitting on top of it. Instead the selected
-   * tab goes near-white (`colors.text`, ~17:1 against the bar fill) and the
-   * four others sit back in neutral greys.
-   *
-   * Icon and label use different idle greys, because they are different kinds of
-   * thing and are held to different contrast floors. The icon is a graphic and
-   * only needs 3:1, so it can take the quieter `textTertiary` (measured 3.9:1).
-   * The label is text and needs 4.5:1, which `textTertiary` fails, so it uses
-   * `textSecondary` (measured 8.2:1). Both still read clearly muted against the
-   * active tab.
-   */
   const iconColor = selected ? colors.text : colors.textTertiary;
 
   return (
@@ -214,45 +235,23 @@ export function NavItem({
       onPressOut={() => {
         pressed.set(withTiming(0, { duration: motion.fast }));
       }}
-      // `style` carries the trigger's flex sizing from TabTrigger.
       style={[styles.item, style]}
     >
-      {/*
-        No indicator element. Anything drawn behind the icon or label here
-        would be exactly the filled background this bar must not have, so the
-        content is the only thing that renders.
-      */}
       <Animated.View style={[styles.itemContent, contentStyle]}>
-        {/*
-         * `optical` is what makes the five glyphs read as one family. They are
-         * hand-drawn, so their ink boxes genuinely differ — the house fills
-         * 19.1 x 18.1 of the 24-unit grid while the bar chart only reaches
-         * 16.7 x 12.6. Measured in the nav at a shared box, the chart and the
-         * sliders rendered about a third smaller than the house. Compensation
-         * is scoped to this bar so no other icon on the app changes.
-         *
-         * The selected tab also gets a slightly heavier stroke. A 0.4pt step at
-         * 20pt reads as emphasis rather than as a different icon, and it is the
-         * only weight cue available for the graphic now that the pill is gone.
-         */}
-        <Icon
-          name={icon}
-          size={ICON_SIZE}
-          color={iconColor}
-          strokeWidth={selected ? 2.3 : 1.9}
-          optical
-          testID={`tab-${name}-icon`}
-        />
-        {/*
-         * The label supports the icon rather than competing with it: 10pt
-         * against a 20pt box, refined tracking. Its leading is owned by the
-         * `navLabel` variant rather than a local override, so it cannot inherit
-         * the 15pt body line-height that used to push the glyph away from the
-         * icon. Only the selected tab is bolded.
-         */}
+        <Animated.View style={iconStyle}>
+          <Icon
+            name={icon}
+            size={ICON_SIZE}
+            color={iconColor}
+            strokeWidth={selected ? 2.3 : 1.9}
+            optical
+            testID={`tab-${name}-icon`}
+          />
+        </Animated.View>
+
         <Text
           variant="navLabel"
-          tone={selected ? 'primary' : 'secondary'}
+          tone={selected ? "primary" : "secondary"}
           style={selected ? styles.labelSelected : styles.label}
           numberOfLines={1}
         >
@@ -263,45 +262,318 @@ export function NavItem({
   );
 }
 
+/* -------------------------------------------------------------------------- */
+/* Center Add button                                                          */
+/* -------------------------------------------------------------------------- */
+
+export function AddNavButton() {
+  const reduceMotion = useReducedMotion();
+
+  const pressed = useSharedValue(0);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        scale: withTiming(pressed.get() ? 0.92 : 1, {
+          duration: reduceMotion ? 0 : motion.instant,
+        }),
+      },
+    ],
+  }));
+
+  const iconAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        rotate: withSpring(pressed.get() ? "45deg" : "0deg", {
+          damping: 15,
+          stiffness: 200,
+        }),
+      },
+    ],
+  }));
+
+  const handlePress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    router.push("/add-expense");
+  };
+
+  return (
+    <Pressable
+      testID="nav-add-expense"
+      accessibilityRole="button"
+      accessibilityLabel="Add expense"
+      accessibilityHint="Opens the add expense screen"
+      onPress={handlePress}
+      onPressIn={() => {
+        pressed.set(withTiming(1, { duration: motion.instant }));
+      }}
+      onPressOut={() => {
+        pressed.set(withTiming(0, { duration: motion.fast }));
+      }}
+      style={styles.addButtonTouchTarget}
+    >
+      <Animated.View style={[styles.addHalo, animatedStyle]}>
+        <View style={styles.addButtonCore}>
+          <Animated.View style={iconAnimatedStyle}>
+            <Icon
+              name="plus"
+              size={24}
+              color={colors.textOnAccent}
+              strokeWidth={2.4}
+              optical
+            />
+          </Animated.View>
+        </View>
+      </Animated.View>
+    </Pressable>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Complete 3-slot visual navigation                                          */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Visual structure:
+ *
+ * Home        + Add        Expenses
+ *
+ * The Add button is absolutely centered so its position does not depend on
+ * text width or icon width.
+ */
+export function ThreeSlotGlassNav({
+  style,
+  homeFocused = false,
+  expensesFocused = false,
+  onHomePress,
+  onExpensesPress,
+}: {
+  style?: StyleProp<ViewStyle>;
+  homeFocused?: boolean;
+  expensesFocused?: boolean;
+  onHomePress?: () => void;
+  onExpensesPress?: () => void;
+}) {
+  const activeIndex = homeFocused ? 0 : 1;
+
+  return (
+    <GlassSurface
+      level="strong"
+      borderLevel="strong"
+      radius={radii.pill}
+      intensity={blur.navigation}
+      shadow="md"
+      highlighted
+      style={[styles.bar, style]}
+      testID="glass-nav-bar"
+    >
+      <ActiveTabIndicator activeIndex={activeIndex} />
+
+      <Pressable
+        testID="nav-home"
+        accessibilityRole="tab"
+        accessibilityLabel="Home"
+        accessibilityState={{ selected: homeFocused }}
+        onPress={() => {
+          if (!homeFocused) {
+            Haptics.selectionAsync().catch(() => {});
+          }
+
+          onHomePress?.();
+        }}
+        style={styles.sideSlot}
+      >
+        <NavVisual label="Home" icon="home" selected={homeFocused} />
+      </Pressable>
+
+      <ViewCenter>
+        <AddNavButton />
+      </ViewCenter>
+
+      <Pressable
+        testID="nav-expenses"
+        accessibilityRole="tab"
+        accessibilityLabel="Expenses"
+        accessibilityState={{ selected: expensesFocused }}
+        onPress={() => {
+          if (!expensesFocused) {
+            Haptics.selectionAsync().catch(() => {});
+          }
+
+          onExpensesPress?.();
+        }}
+        style={styles.sideSlot}
+      >
+        <NavVisual label="Expenses" icon="receipt" selected={expensesFocused} />
+      </Pressable>
+    </GlassSurface>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Visual nav item                                                            */
+/* -------------------------------------------------------------------------- */
+
+function NavVisual({
+  label,
+  icon,
+  selected,
+}: {
+  label: string;
+  icon: IconName;
+  selected: boolean;
+}) {
+  return (
+    <ViewCenter>
+      <Animated.View style={styles.itemContent}>
+        <Icon
+          name={icon}
+          size={ICON_SIZE}
+          color={selected ? colors.text : colors.textTertiary}
+          strokeWidth={selected ? 2.3 : 1.9}
+          optical
+        />
+
+        <Text
+          variant="navLabel"
+          tone={selected ? "primary" : "secondary"}
+          style={selected ? styles.labelSelected : styles.label}
+          numberOfLines={1}
+        >
+          {label}
+        </Text>
+      </Animated.View>
+    </ViewCenter>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Small layout helper                                                        */
+/* -------------------------------------------------------------------------- */
+
+function ViewCenter({ children }: { children: React.ReactNode }) {
+  return <Animated.View style={styles.center}>{children}</Animated.View>;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Styles                                                                     */
+/* -------------------------------------------------------------------------- */
+
 const styles = StyleSheet.create({
   bar: {
     height: HEIGHT,
+
+    flexDirection: "row",
+    alignItems: "center",
+
+    paddingHorizontal: 6,
+
+    backgroundColor: "rgba(19, 25, 38, 0.88)",
   },
+
+  indicatorPill: {
+    position: "absolute",
+    top: 6,
+    bottom: 6,
+    borderRadius: radii.pill,
+    backgroundColor: "rgba(108, 123, 255, 0.16)",
+    borderWidth: 1,
+    borderColor: "rgba(108, 123, 255, 0.35)",
+    shadowColor: colors.accent,
+    shadowOpacity: 0.28,
+    shadowRadius: 8,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+  },
+
+  sideSlot: {
+    flex: 1,
+    height: HEIGHT,
+
+    alignItems: "center",
+    justifyContent: "center",
+
+    minHeight: touchTarget.navItemMinHeight,
+  },
+
   item: {
     flex: 1,
-    // `center` rather than `stretch`: the bar is only 54 tall, so letting the
-    // touch layer stretch would make the row's vertical rhythm depend on the
-    // tallest label instead of on the bar.
-    alignSelf: 'center',
-    // 48pt, comfortably over the 44pt minimum, and unchanged from before — the
-    // pill's padding was never what made the target large.
+    alignSelf: "center",
+
     minHeight: touchTarget.navItemMinHeight,
-    alignItems: 'center',
-    justifyContent: 'center',
+
+    alignItems: "center",
+    justifyContent: "center",
   },
+
   itemContent: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
+
     gap: ICON_LABEL_GAP,
   },
-  /**
-   * The label is a supporting role, so its type lives in the `navLabel` variant.
-   * This style only centres the text within the icon's width — a label narrower
-   * than its icon would otherwise sit off-centre.
-   */
-  label: {
-    textAlign: 'center',
+
+  center: {
+    width: ADD_BUTTON_SIZE + 16,
+    height: HEIGHT,
+
+    alignItems: "center",
+    justifyContent: "center",
   },
-  /**
-   * The whole of the selected state at type level: one weight step up.
-   *
-   * Only regular and bold render distinctly on Android — 400/500/600 are
-   * identical output from the bundled variable font, which Android synthesises
-   * rather than resolves — so `bold` is the only real step available, and it is
-   * the one that reads as emphasis at 10pt.
-   */
+
+  addButtonTouchTarget: {
+    width: ADD_BUTTON_SIZE + 12,
+    height: HEIGHT,
+
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  addHalo: {
+    width: ADD_BUTTON_SIZE,
+    height: ADD_BUTTON_SIZE,
+
+    borderRadius: ADD_BUTTON_SIZE / 2,
+
+    alignItems: "center",
+    justifyContent: "center",
+
+    backgroundColor: "rgba(108, 123, 255, 0.20)",
+    borderWidth: 1,
+    borderColor: "rgba(108, 123, 255, 0.38)",
+
+    shadowColor: colors.accent,
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+
+    elevation: 8,
+  },
+
+  addButtonCore: {
+    width: ADD_BUTTON_SIZE - 10,
+    height: ADD_BUTTON_SIZE - 10,
+
+    borderRadius: (ADD_BUTTON_SIZE - 10) / 2,
+
+    alignItems: "center",
+    justifyContent: "center",
+
+    backgroundColor: colors.accent,
+  },
+
+  label: {
+    textAlign: "center",
+  },
+
   labelSelected: {
-    textAlign: 'center',
+    textAlign: "center",
     fontWeight: fontWeight.bold,
   },
 });
+
