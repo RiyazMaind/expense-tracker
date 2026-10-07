@@ -15,8 +15,11 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Screen } from "@/components/ui/screen";
 import { ScreenHeader } from "@/components/ui/screen-header";
 import { SettingsIconButton } from "@/components/ui/settings-icon-button";
+import { getCategory } from "@/constants/categories";
 import { getDatabase } from "@/database/database";
 import { AnalyticsRepository } from "@/database/repositories/analytics-repository";
+import { BudgetRepository } from "@/database/repositories/budget-repository";
+import { ExpenseRepository } from "@/database/repositories/expense-repository";
 import { useExpenseStore } from "@/store/expenseStore";
 import { colors, spacing } from "@/theme";
 import {
@@ -26,10 +29,13 @@ import {
 } from "@/utils/analytics";
 import { formatInr } from "@/utils/currency";
 import {
-  formatMonthYear,
-  formatShortDay,
-  fromDateKey
-} from "@/utils/dates";
+  computeBudgetOutlook,
+  currentMonthKey,
+  formatMonthKey,
+  type BudgetOutlook,
+} from "@/utils/budget";
+import { endOfMonth } from "@/utils/calculations";
+import { formatMonthYear, formatShortDay, fromDateKey, shiftMonthKey } from "@/utils/dates";
 
 /**
  * Home — the overview and the breakdown, on one screen.
@@ -72,6 +78,13 @@ export default function HomeScreen() {
   const [reportStatus, setReportStatus] = useState<
     "loading" | "ready" | "error"
   >("loading");
+  const [viewMonthKey, setViewMonthKey] = useState<string | null>(null);
+  const [loadedCurrentKey, setLoadedCurrentKey] = useState<string | null>(null);
+  const [earliestMonthKey, setEarliestMonthKey] = useState<string | null>(null);
+  const [budget, setBudget] = useState<{
+    monthKey: string;
+    outlook: BudgetOutlook | null;
+  } | null>(null);
 
   /*
     Focus can arrive again before the previous read has finished, and two reads
@@ -80,20 +93,6 @@ export default function HomeScreen() {
     were already superseded.
   */
   const latestLoad = useRef(0);
-
-  const loadBudget = useCallback(async () => {
-    const monthKey = currentMonthKey();
-
-    try {
-      const repository = new BudgetRepository(await getDatabase());
-      const nextBudget = await repository.getBudget(monthKey);
-      setBudget(nextBudget);
-      setBudgetStatus("ready");
-    } catch (error) {
-      console.warn("[home] could not load the budget", error);
-      setBudgetStatus("error");
-    }
-  }, []);
 
   const loadReport = useCallback(async () => {
     const loadId = latestLoad.current + 1;
@@ -202,9 +201,8 @@ export default function HomeScreen() {
   useFocusEffect(
     useCallback(() => {
       loadSummary();
-      loadBudget();
       loadReport();
-    }, [loadSummary, loadBudget, loadReport]),
+    }, [loadSummary, loadReport]),
   );
 
   /*
@@ -219,8 +217,33 @@ export default function HomeScreen() {
     latestLoad.current += 1;
     setViewMonthKey(next);
     setReport(null);
+    setBudget(null);
     setReportStatus("loading");
   }, []);
+
+  const currentKey = loadedCurrentKey ?? currentMonthKey();
+  const displayKey = viewMonthKey ?? currentKey;
+  const isCurrentMonth = displayKey === currentKey;
+  const canGoBack = earliestMonthKey != null && displayKey > earliestMonthKey;
+  const canGoForward = displayKey < currentKey;
+  const activeBudget = budget?.monthKey === displayKey ? budget : null;
+
+  const handlePrevMonth = useCallback(() => {
+    if (canGoBack) {
+      handleMonthChange(shiftMonthKey(displayKey, -1));
+    }
+  }, [canGoBack, displayKey, handleMonthChange]);
+
+  const handleNextMonth = useCallback(() => {
+    if (canGoForward) {
+      const nextKey = shiftMonthKey(displayKey, 1);
+      handleMonthChange(nextKey < currentKey ? nextKey : null);
+    }
+  }, [canGoForward, currentKey, displayKey, handleMonthChange]);
+
+  const handleResetMonth = useCallback(() => {
+    handleMonthChange(null);
+  }, [handleMonthChange]);
 
   const hasExpenses = (summary?.expenseCount ?? 0) > 0;
 
@@ -349,61 +372,6 @@ export default function HomeScreen() {
           testID="tile-busiest"
         />
       </View>
-
-      {budgetStatus === "loading" && budget == null ? (
-        <GlassCard
-          title="Monthly budget"
-          subtitle="Loading your budget…"
-          testID="home-budget-loading"
-        />
-      ) : budgetProgress != null ? (
-        <GlassCard testID="home-budget-card">
-          <Text variant="label" tone="secondary">
-            {`Monthly budget · ${monthBudgetLabel}`}
-          </Text>
-
-          <Text variant="display" tabular testID="home-budget-amount">
-            {formatInr(budgetProgress.budgetPaise)}
-          </Text>
-
-          <Text
-            variant="caption"
-            tone={budgetProgress.exceeded ? "destructive" : "secondary"}
-            accessibilityLiveRegion="polite"
-            testID="home-budget-status"
-          >
-            {budgetProgress.exceeded
-              ? `${Math.round(budgetProgress.percentUsed)}% used · over budget by ${formatInr(-budgetProgress.remainingPaise)}`
-              : `${Math.round(budgetProgress.percentUsed)}% used · ${formatInr(Math.max(0, budgetProgress.remainingPaise))} left`}
-          </Text>
-
-          <GlassButton
-            variant="secondary"
-            onPress={() => router.push("/budget")}
-            accessibilityLabel="View monthly budget"
-            accessibilityHint="Opens the budget screen"
-            testID="home-budget-link"
-          >
-            <ButtonLabel variant="secondary">View budget</ButtonLabel>
-          </GlassButton>
-        </GlassCard>
-      ) : (
-        <GlassCard
-          title="Monthly budget"
-          subtitle={`Set a budget for ${monthBudgetLabel} to keep this month on track.`}
-          testID="home-budget-empty"
-        >
-          <GlassButton
-            variant="secondary"
-            onPress={() => router.push("/budget")}
-            accessibilityLabel="Set monthly budget"
-            accessibilityHint="Opens the budget screen"
-            testID="home-budget-set"
-          >
-            <ButtonLabel variant="secondary">Set budget</ButtonLabel>
-          </GlassButton>
-        </GlassCard>
-      )}
 
       {/*
         Driven by the all-time count rather than by today's figure: someone who
