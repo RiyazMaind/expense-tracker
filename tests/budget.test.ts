@@ -7,7 +7,11 @@ import {
   ExpenseRepository,
   type NewExpense,
 } from '@/database/repositories/expense-repository';
-import { computeBudgetProgress, formatMonthKey } from '@/utils/budget';
+import {
+  computeBudgetOutlook,
+  computeBudgetProgress,
+  formatMonthKey,
+} from '@/utils/budget';
 import { toMonthKey } from '@/utils/dates';
 import { createTestDatabase, type TestDatabase } from './support/node-sqlite-driver.ts';
 
@@ -205,6 +209,74 @@ describe('computeBudgetProgress', () => {
   it('never divides by zero when the budget is zero', () => {
     assert.equal(computeBudgetProgress(0, 0).percentUsed, 0);
     assert.ok(computeBudgetProgress(0, 100).exceeded);
+  });
+});
+
+describe('computeBudgetOutlook', () => {
+  it('spreads what is left over the days remaining, today included', () => {
+    // 6 October 2026, a 31-day month: 26 days left counting today.
+    const outlook = computeBudgetOutlook(2_000_000, 1_200_000, new Date(2026, 9, 6));
+
+    assert.equal(outlook.daysRemaining, 26);
+    assert.equal(outlook.dailyAllowancePaise, Math.round(800_000 / 26));
+    assert.equal(outlook.progress.remainingPaise, 800_000);
+  });
+
+  it('projects the month end from the pace so far and flags an overshoot', () => {
+    // ₹12,000 over 6 days = ₹2,000/day × 31 days = ₹62,000 — well over ₹20,000.
+    const outlook = computeBudgetOutlook(2_000_000, 1_200_000, new Date(2026, 9, 6));
+
+    assert.equal(outlook.projectedPaise, 6_200_000);
+    assert.equal(outlook.projectedGapPaise, 4_200_000);
+    assert.equal(outlook.projectedExceeded, true);
+  });
+
+  it('reports a projection landing under the budget as a negative gap', () => {
+    // ₹3,000 over 6 days = ₹500/day × 31 = ₹15,500 against a ₹20,000 budget.
+    const outlook = computeBudgetOutlook(2_000_000, 300_000, new Date(2026, 9, 6));
+
+    assert.equal(outlook.projectedPaise, 1_550_000);
+    assert.equal(outlook.projectedGapPaise, -450_000);
+    assert.equal(outlook.projectedExceeded, false);
+  });
+
+  it('stops the daily allowance at zero once the budget is spent', () => {
+    const outlook = computeBudgetOutlook(2_000_000, 2_500_000, new Date(2026, 9, 6));
+
+    assert.equal(outlook.progress.exceeded, true);
+    assert.equal(outlook.dailyAllowancePaise, 0);
+  });
+
+  it('handles the last day: one day left and the whole remainder available', () => {
+    const outlook = computeBudgetOutlook(1_000_000, 400_000, new Date(2026, 9, 31));
+
+    assert.equal(outlook.daysRemaining, 1);
+    assert.equal(outlook.dailyAllowancePaise, 600_000);
+    // Every day has elapsed, so projecting the pace across the month is the spend itself.
+    assert.equal(outlook.projectedPaise, 400_000);
+    assert.equal(outlook.projectedExceeded, false);
+  });
+
+  it('counts a leap February as 29 days', () => {
+    const outlook = computeBudgetOutlook(500_000, 100_000, new Date(2024, 1, 10));
+
+    assert.equal(outlook.daysRemaining, 20);
+    assert.equal(outlook.projectedPaise, Math.round((100_000 / 10) * 29));
+  });
+
+  it('projects a single day of spending across the whole month', () => {
+    const outlook = computeBudgetOutlook(2_000_000, 100_000, new Date(2026, 9, 1));
+
+    assert.equal(outlook.daysRemaining, 31);
+    assert.equal(outlook.projectedPaise, 3_100_000);
+    assert.equal(outlook.projectedExceeded, true);
+  });
+
+  it('carries the spent-versus-budget progress through unchanged', () => {
+    const reference = new Date(2026, 9, 15);
+    const outlook = computeBudgetOutlook(2_000_000, 1_200_000, reference);
+
+    assert.deepEqual(outlook.progress, computeBudgetProgress(2_000_000, 1_200_000));
   });
 });
 

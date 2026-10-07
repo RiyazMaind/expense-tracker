@@ -2,12 +2,7 @@ import { router, usePathname } from 'expo-router';
 import { TabList, TabSlot, TabTrigger, Tabs } from 'expo-router/ui';
 import * as Haptics from 'expo-haptics';
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GlassSurface } from '@/components/glass/glass-surface';
@@ -117,27 +112,23 @@ function TabCenterSlot() {
  *
  * `pointerEvents: 'box-none'` lets taps either side reach the tabs underneath
  * while the button's own 48dp circle still receives its touches.
+ *
+ * The press response is the same one `NavItem` gives the Home and Expenses
+ * icons — a quick dip to 0.94 and 0.6 opacity, no rotation — so every control
+ * on the bar answers a touch the same way.
  */
 function NavAddButton({ style }: { style?: StyleProp<ViewStyle> }) {
   const reduceMotion = useReducedMotion();
   const pressed = useSharedValue(0);
 
-  const buttonAnimatedStyle = useAnimatedStyle(() => ({
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: withTiming(pressed.get() ? 0.6 : 1, {
+      duration: reduceMotion ? 0 : motion.instant,
+    }),
     transform: [
       {
-        scale: withTiming(pressed.get() ? 0.92 : 1, {
+        scale: withTiming(pressed.get() ? 0.94 : 1, {
           duration: reduceMotion ? 0 : motion.instant,
-        }),
-      },
-    ],
-  }));
-
-  const iconAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        rotate: withSpring(pressed.get() ? '45deg' : '0deg', {
-          damping: 15,
-          stiffness: 200,
         }),
       },
     ],
@@ -159,7 +150,7 @@ function NavAddButton({ style }: { style?: StyleProp<ViewStyle> }) {
         }}
         hitSlop={6}
       >
-        <Animated.View style={[styles.addHalo, buttonAnimatedStyle]}>
+        <Animated.View style={[styles.addHalo, animatedStyle]}>
           <GlassSurface
             solid
             blurred={false}
@@ -167,9 +158,7 @@ function NavAddButton({ style }: { style?: StyleProp<ViewStyle> }) {
             shadow="md"
             style={styles.addCircle}
           >
-            <Animated.View style={iconAnimatedStyle}>
-              <Icon name="plus" size={22} color={colors.textOnAccent} testID="nav-add-icon" />
-            </Animated.View>
+            <Icon name="plus" size={22} color={colors.textOnAccent} testID="nav-add-icon" />
           </GlassSurface>
         </Animated.View>
       </Pressable>

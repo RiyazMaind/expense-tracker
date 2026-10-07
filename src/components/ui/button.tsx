@@ -168,6 +168,7 @@ function ButtonBackground({
       <View
         style={[
           styles.ghost,
+          styles.contentRow,
           { minHeight, borderRadius: radii.pill },
           disabled && styles.disabled,
         ]}
@@ -192,7 +193,13 @@ function ButtonBackground({
         disabled && styles.disabled,
       ]}
     >
-      {children}
+      {/*
+        GlassSurface lays its content out as a column, which put the icon on
+        its own line above a full-width label. This row puts the icon inline
+        before the label and centres the pair, which is what a compound
+        icon + text button is supposed to read as.
+      */}
+      <View style={styles.contentRow}>{children}</View>
     </GlassSurface>
   );
 }
@@ -232,6 +239,12 @@ const styles = StyleSheet.create({
   background: {
     justifyContent: 'center',
     paddingHorizontal: spacing.xl,
+  },
+  /** One centred line for icon + label, and for the spinner on its own. */
+  contentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   ghost: {
     justifyContent: 'center',

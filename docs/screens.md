@@ -15,6 +15,11 @@ Content:
 - Daily spending trend
 - Category breakdown
 - Budget progress
+- Month switcher: browses one month at a time, back through every past month
+  that has expenses; the hero, tiles, trend, categories and budget all re-scope
+  to the month shown. Past months read against their own last day, so their
+  trend covers the whole month and their budget card states the outcome
+  ("Month ended ₹X under budget") instead of the forecast.
 - Recent expenses
 - Add Expense action
 
@@ -71,7 +76,8 @@ category breakdown, daily average and highest spending day. Keeping them on the
 screen the user already opens means the totals and the trend they explain can
 never disagree about which days a week contains.
 
-Previous-month comparison is not implemented.
+The dashboard browses one month at a time — past months via the switcher under
+the header. Side-by-side month comparison is not implemented.
 
 ## 5. Budget
 

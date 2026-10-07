@@ -186,6 +186,23 @@ export class ExpenseRepository {
     };
   }
 
+  /**
+   * The earliest month that has expenses, as `YYYY-MM`, or `null` when the
+   * table is empty.
+   *
+   * This is where the Home screen's month switcher stops: browsing further back
+   * would show a month with no data in it. `MIN(date)` answers it in one index
+   * seek, and slicing the date key to its month is exact because `date` is
+   * zero-padded `YYYY-MM-DD` and lexicographic order equals calendar order.
+   */
+  async getEarliestMonthKey(): Promise<string | null> {
+    const row = await this.db.getFirstAsync<{ date: string | null }>(
+      'SELECT MIN(date) AS date FROM expenses',
+    );
+
+    return row?.date == null ? null : row.date.slice(0, 7);
+  }
+
   /** Every expense in one local period, newest first. */
   async listInRange(range: { fromKey: string; toKey: string }): Promise<Expense[]> {
     const rows = await this.db.getAllAsync<ExpenseRow>(

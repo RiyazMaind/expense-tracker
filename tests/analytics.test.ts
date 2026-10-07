@@ -349,6 +349,7 @@ describe('buildAnalyticsReport', () => {
       periods,
       weekPaise: 1000,
       monthPaise: 3000,
+      monthEntryCount: 3,
       expenseCount: 3,
       categoryTotals: [slice('food', 2000, 2), slice('transport', 1000, 1)],
       dailyTotals: [
@@ -415,6 +416,12 @@ describe('buildAnalyticsReport', () => {
 
   it('divides the month total by the days elapsed', () => {
     assert.equal(report().averagePerDayPaise, 500);
+  });
+
+  it('carries the month entry count through untouched', () => {
+    // The past-month "Expenses" tile reads this; nothing about it is derived.
+    assert.equal(report().monthEntryCount, 3);
+    assert.equal(report({ monthEntryCount: 7 }).monthEntryCount, 7);
   });
 
   it('distinguishes "no expenses at all" from "nothing spent this month"', () => {
