@@ -1,11 +1,22 @@
 import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 
 import { GlassCard } from '@/components/glass/glass-card';
+import {
+  GlassNavBar,
+  NavAddButton,
+  NavCenterSlot,
+  NavItem,
+  expensesTab,
+  homeTab,
+  navBarPosition,
+  navListStyle,
+} from '@/components/navigation/glass-nav-bar';
 import { ButtonLabel, GlassButton } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Screen } from '@/components/ui/screen';
@@ -20,7 +31,7 @@ import {
   serializeExport,
 } from '@/services/data-transfer';
 import { useExpenseStore } from '@/store/expenseStore';
-import { colors, spacing, touchTarget } from '@/theme';
+import { colors, navigation, spacing, touchTarget } from '@/theme';
 
 type DataStatus =
   | { kind: 'idle' }
@@ -59,10 +70,29 @@ function describeImport(result: {
  * about where the data lives* — dark-only, local-only, offline — plus the three
  * data-safety actions: export, import, delete everything. Nothing here talks
  * to a network (docs/product.md Privacy).
+ *
+ * Settings lives outside the `(tabs)` group, so the floating bottom bar is
+ * assembled here from the very pieces the tab layout uses — `GlassNavBar`,
+ * `NavItem` slots, `NavCenterSlot`, `NavAddButton` — layered in the same
+ * order, so it is the home screen's bar rather than a lookalike. Neither tab
+ * is focused on this screen, and a press dismisses back to the chosen tab
+ * instead of pushing a duplicate screen.
  */
 export default function SettingsScreen() {
   const loadSummary = useExpenseStore((state) => state.loadSummary);
+  const insets = useSafeAreaInsets();
   const [status, setStatus] = useState<DataStatus>({ kind: 'idle' });
+
+  // Floats above the home indicator / gesture bar — identical to the tab bar.
+  const position = [navBarPosition, { bottom: navigation.bottomOffset + insets.bottom }];
+
+  const handleHomePress = useCallback(() => {
+    router.dismissTo('/');
+  }, []);
+
+  const handleExpensesPress = useCallback(() => {
+    router.dismissTo('/expenses');
+  }, []);
 
   const handleExport = useCallback(async () => {
     setStatus({ kind: 'working', label: 'Preparing export…' });
@@ -148,106 +178,152 @@ export default function SettingsScreen() {
   }, [performDeleteAll]);
 
   return (
-    <Screen testID="screen-settings">
-      <ScreenHeader title="Settings" subtitle="Your data, your device" />
+    <View style={styles.root}>
+      <Screen testID="screen-settings">
+        <ScreenHeader title="Settings" subtitle="Your data, your device" />
 
-      <GlassCard title="Appearance" testID="card-appearance">
-        <Text variant="body" tone="secondary" testID="settings-theme-info">
-          Expense Tracker uses a single dark theme. There is no light mode to switch to.
-        </Text>
-      </GlassCard>
+        <GlassCard title="Appearance" testID="card-appearance">
+          <Text variant="body" tone="secondary" testID="settings-theme-info">
+            Expense Tracker uses a single dark theme. There is no light mode to switch to.
+          </Text>
+        </GlassCard>
+
+        {/*
+          Budget's door. It left the bottom bar when the bar was cut back to
+          Home | Add | Expenses (docs/screens.md lists "Monthly budget" among the
+          Settings options), and without this row the screen would be unreachable.
+        */}
+        <GlassCard
+          title="Monthly budget"
+          subtitle="Control this month's spending"
+          testID="card-budget-link"
+        >
+          <Pressable
+            testID="settings-budget"
+            accessibilityRole="button"
+            accessibilityLabel="Open budget"
+            accessibilityHint="Set and track this month's spending limit"
+            onPress={() => router.push('/budget')}
+            style={styles.linkRow}
+          >
+            <Icon name="wallet" size={18} color={colors.accent} />
+            <Text variant="body" tone="secondary" style={styles.linkLabel}>
+              Set and track your monthly budget
+            </Text>
+            <Icon name="chevronRight" size={16} color={colors.textTertiary} />
+          </Pressable>
+        </GlassCard>
+
+        <GlassCard title="Storage" testID="card-storage">
+          <Text variant="body" tone="secondary" testID="settings-storage-info">
+            All your data is stored locally on this device in SQLite. The app works fully offline —
+            nothing is uploaded, synced, or shared.
+          </Text>
+        </GlassCard>
+
+        <GlassCard title="Your data" subtitle="Back up, restore, or erase" testID="card-data">
+          <View style={styles.actions}>
+            <GlassButton
+              variant="secondary"
+              block
+              onPress={handleExport}
+              disabled={status.kind === 'working'}
+              accessibilityLabel="Export data"
+              accessibilityHint="Creates a JSON backup of your expenses and budgets"
+              testID="settings-export"
+            >
+              <ButtonLabel variant="secondary">Export data</ButtonLabel>
+            </GlassButton>
+
+            <GlassButton
+              variant="secondary"
+              block
+              onPress={handleImport}
+              disabled={status.kind === 'working'}
+              accessibilityLabel="Import or restore data"
+              accessibilityHint="Restores expenses and budgets from a backup file"
+              testID="settings-import"
+            >
+              <ButtonLabel variant="secondary">Import / restore</ButtonLabel>
+            </GlassButton>
+
+            <GlassButton
+              variant="destructive"
+              block
+              onPress={handleDeleteAllRequest}
+              disabled={status.kind === 'working'}
+              accessibilityLabel="Delete all data"
+              accessibilityHint="Permanently removes every expense and budget"
+              testID="settings-delete-all"
+            >
+              <ButtonLabel variant="destructive">Delete all data</ButtonLabel>
+            </GlassButton>
+
+            {status.kind === 'working' ? (
+              <Text variant="caption" tone="secondary" testID="settings-status">
+                {status.label}
+              </Text>
+            ) : status.kind === 'done' ? (
+              <Text
+                variant="caption"
+                tone="positive"
+                accessibilityLiveRegion="polite"
+                testID="settings-status"
+              >
+                {status.message}
+              </Text>
+            ) : status.kind === 'error' ? (
+              <Text
+                variant="caption"
+                tone="destructive"
+                accessibilityLiveRegion="assertive"
+                testID="settings-status"
+              >
+                {status.message}
+              </Text>
+            ) : null}
+          </View>
+        </GlassCard>
+      </Screen>
 
       {/*
-        Budget's door. It left the bottom bar when the bar was cut back to
-        Home | Add | Expenses (docs/screens.md lists "Monthly budget" among the
-        Settings options), and without this row the screen would be unreachable.
+        The bar layers sit as siblings of the ScrollView, not inside it:
+        absolute positioning within a scroll content container would pin them
+        to the content and let them scroll away. Order matches the tab layout —
+        material, touch row, Add overlay.
       */}
-      <GlassCard
-        title="Monthly budget"
-        subtitle="Control this month's spending"
-        testID="card-budget-link"
-      >
-        <Pressable
-          testID="settings-budget"
-          accessibilityRole="button"
-          accessibilityLabel="Open budget"
-          accessibilityHint="Set and track this month's spending limit"
-          onPress={() => router.push('/budget')}
-          style={styles.linkRow}
-        >
-          <Icon name="wallet" size={18} color={colors.accent} />
-          <Text variant="body" tone="secondary" style={styles.linkLabel}>
-            Set and track your monthly budget
-          </Text>
-          <Icon name="chevronRight" size={16} color={colors.textTertiary} />
-        </Pressable>
-      </GlassCard>
+      <GlassNavBar style={position} activeIndex={null} />
 
-      <GlassCard title="Storage" testID="card-storage">
-        <Text variant="body" tone="secondary" testID="settings-storage-info">
-          All your data is stored locally on this device in SQLite. The app works fully offline — nothing
-          is uploaded, synced, or shared.
-        </Text>
-      </GlassCard>
+      <View style={[navListStyle, position]}>
+        <NavItem
+          name={homeTab.name}
+          label={homeTab.label}
+          icon={homeTab.icon}
+          isFocused={false}
+          onPress={handleHomePress}
+        />
 
-      <GlassCard title="Your data" subtitle="Back up, restore, or erase" testID="card-data">
-        <View style={styles.actions}>
-          <GlassButton
-            variant="secondary"
-            block
-            onPress={handleExport}
-            disabled={status.kind === 'working'}
-            accessibilityLabel="Export data"
-            accessibilityHint="Creates a JSON backup of your expenses and budgets"
-            testID="settings-export"
-          >
-            <ButtonLabel variant="secondary">Export data</ButtonLabel>
-          </GlassButton>
+        <NavCenterSlot />
 
-          <GlassButton
-            variant="secondary"
-            block
-            onPress={handleImport}
-            disabled={status.kind === 'working'}
-            accessibilityLabel="Import or restore data"
-            accessibilityHint="Restores expenses and budgets from a backup file"
-            testID="settings-import"
-          >
-            <ButtonLabel variant="secondary">Import / restore</ButtonLabel>
-          </GlassButton>
+        <NavItem
+          name={expensesTab.name}
+          label={expensesTab.label}
+          icon={expensesTab.icon}
+          isFocused={false}
+          onPress={handleExpensesPress}
+        />
+      </View>
 
-          <GlassButton
-            variant="destructive"
-            block
-            onPress={handleDeleteAllRequest}
-            disabled={status.kind === 'working'}
-            accessibilityLabel="Delete all data"
-            accessibilityHint="Permanently removes every expense and budget"
-            testID="settings-delete-all"
-          >
-            <ButtonLabel variant="destructive">Delete all data</ButtonLabel>
-          </GlassButton>
-
-          {status.kind === 'working' ? (
-            <Text variant="caption" tone="secondary" testID="settings-status">
-              {status.label}
-            </Text>
-          ) : status.kind === 'done' ? (
-            <Text variant="caption" tone="positive" accessibilityLiveRegion="polite" testID="settings-status">
-              {status.message}
-            </Text>
-          ) : status.kind === 'error' ? (
-            <Text variant="caption" tone="destructive" accessibilityLiveRegion="assertive" testID="settings-status">
-              {status.message}
-            </Text>
-          ) : null}
-        </View>
-      </GlassCard>
-    </Screen>
+      <NavAddButton style={position} />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   actions: {
     gap: spacing.sm,
   },

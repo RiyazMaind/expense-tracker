@@ -61,8 +61,6 @@ const HORIZONTAL_MARGIN = 16;
 const ICON_SIZE = 20;
 const ICON_LABEL_GAP = 3;
 
-const ADD_BUTTON_SIZE = 54;
-
 /**
  * Shared absolute positioning for the floating navbar.
  */
@@ -72,7 +70,23 @@ export const navBarPosition: ViewStyle = {
   right: HORIZONTAL_MARGIN,
 };
 
-export const navBarHeight = HEIGHT;
+/**
+ * Layout for the transparent touch row that sits over the glass surface.
+ *
+ * No horizontal padding: `navBarPosition` already insets both the surface and
+ * this row by the same amount, so padding here as well would double the inset
+ * on the touches while leaving the glass where it is. Transparent, because the
+ * glass surface below provides the material — this row only exists to lay out
+ * items and receive touches.
+ */
+export const navListStyle: ViewStyle = {
+  flexDirection: "row",
+  alignItems: "center",
+  height: HEIGHT,
+  paddingHorizontal: 0,
+  backgroundColor: "transparent",
+  borderRadius: radii.pill,
+};
 
 /* -------------------------------------------------------------------------- */
 /* Active Tab Indicator                                                       */
@@ -129,12 +143,19 @@ export function ActiveTabIndicator({
 /* Glass surface                                                              */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * The floating glass surface every bottom bar is made of.
+ *
+ * `activeIndex` is which of the outer thirds the indicator pill sits in.
+ * Pass `null` on a screen that is not a tab (Settings) — the pill hides
+ * instead of claiming a slot that is not focused.
+ */
 export function GlassNavBar({
   style,
   activeIndex = 0,
 }: {
   style?: StyleProp<ViewStyle>;
-  activeIndex?: number;
+  activeIndex?: number | null;
 }) {
   return (
     <GlassSurface
@@ -147,7 +168,7 @@ export function GlassNavBar({
       style={[styles.bar, style]}
       testID="glass-nav-bar"
     >
-      <ActiveTabIndicator activeIndex={activeIndex} />
+      {activeIndex !== null && <ActiveTabIndicator activeIndex={activeIndex} />}
     </GlassSurface>
   );
 }
@@ -263,196 +284,103 @@ export function NavItem({
 }
 
 /* -------------------------------------------------------------------------- */
+/* Centre slot                                                                */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Home and Expenses are the outer thirds; this is what sits between them.
+ *
+ * It has to exist for the two tabs to be centred in their own thirds rather
+ * than butted up against the bar's middle. It ignores touches, so a tap in
+ * that region falls through to the Add button above it instead of registering
+ * as a tab.
+ */
+export function NavCenterSlot() {
+  return (
+    <View
+      style={styles.centerSlot}
+      accessibilityRole="none"
+      pointerEvents="none"
+      testID="nav-center-slot"
+    />
+  );
+}
+
+/* -------------------------------------------------------------------------- */
 /* Center Add button                                                          */
 /* -------------------------------------------------------------------------- */
 
-export function AddNavButton() {
+/**
+ * The centred Add action.
+ *
+ * Centring is absolute and derived from nothing but the bar's own frame: the
+ * overlay takes the exact same `navBarPosition` insets as the glass surface
+ * and the touch list, then centres its single child with `alignItems: 'center'`.
+ * So the button lands on the bar's true midpoint at any screen width, and stays
+ * there however wide the Home and Expenses labels or icons happen to measure —
+ * the drift a flex row shared with the tabs would have.
+ *
+ * `pointerEvents: 'box-none'` lets taps either side reach the tabs underneath
+ * while the button's own 48dp circle still receives its touches.
+ *
+ * The press response is the same one `NavItem` gives the Home and Expenses
+ * icons — a quick dip to 0.94 and 0.6 opacity, no rotation — so every control
+ * on the bar answers a touch the same way.
+ */
+export function NavAddButton({ style }: { style?: StyleProp<ViewStyle> }) {
   const reduceMotion = useReducedMotion();
-
   const pressed = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => ({
+    opacity: withTiming(pressed.get() ? 0.6 : 1, {
+      duration: reduceMotion ? 0 : motion.instant,
+    }),
     transform: [
       {
-        scale: withTiming(pressed.get() ? 0.92 : 1, {
+        scale: withTiming(pressed.get() ? 0.94 : 1, {
           duration: reduceMotion ? 0 : motion.instant,
         }),
       },
     ],
   }));
 
-  const iconAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        rotate: withSpring(pressed.get() ? "45deg" : "0deg", {
-          damping: 15,
-          stiffness: 200,
-        }),
-      },
-    ],
-  }));
-
-  const handlePress = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
-    router.push("/add-expense");
-  };
-
   return (
-    <Pressable
-      testID="nav-add-expense"
-      accessibilityRole="button"
-      accessibilityLabel="Add expense"
-      accessibilityHint="Opens the add expense screen"
-      onPress={handlePress}
-      onPressIn={() => {
-        pressed.set(withTiming(1, { duration: motion.instant }));
-      }}
-      onPressOut={() => {
-        pressed.set(withTiming(0, { duration: motion.fast }));
-      }}
-      style={styles.addButtonTouchTarget}
-    >
-      <Animated.View style={[styles.addHalo, animatedStyle]}>
-        <View style={styles.addButtonCore}>
-          <Animated.View style={iconAnimatedStyle}>
-            <Icon
-              name="plus"
-              size={24}
-              color={colors.textOnAccent}
-              strokeWidth={2.4}
-              optical
-            />
-          </Animated.View>
-        </View>
-      </Animated.View>
-    </Pressable>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/* Complete 3-slot visual navigation                                          */
-/* -------------------------------------------------------------------------- */
-
-/**
- * Visual structure:
- *
- * Home        + Add        Expenses
- *
- * The Add button is absolutely centered so its position does not depend on
- * text width or icon width.
- */
-export function ThreeSlotGlassNav({
-  style,
-  homeFocused = false,
-  expensesFocused = false,
-  onHomePress,
-  onExpensesPress,
-}: {
-  style?: StyleProp<ViewStyle>;
-  homeFocused?: boolean;
-  expensesFocused?: boolean;
-  onHomePress?: () => void;
-  onExpensesPress?: () => void;
-}) {
-  const activeIndex = homeFocused ? 0 : 1;
-
-  return (
-    <GlassSurface
-      level="strong"
-      borderLevel="strong"
-      radius={radii.pill}
-      intensity={blur.navigation}
-      shadow="md"
-      highlighted
-      style={[styles.bar, style]}
-      testID="glass-nav-bar"
-    >
-      <ActiveTabIndicator activeIndex={activeIndex} />
-
+    <View style={[styles.addOverlay, style]}>
       <Pressable
-        testID="nav-home"
-        accessibilityRole="tab"
-        accessibilityLabel="Home"
-        accessibilityState={{ selected: homeFocused }}
-        onPress={() => {
-          if (!homeFocused) {
-            Haptics.selectionAsync().catch(() => {});
-          }
-
-          onHomePress?.();
+        testID="nav-add"
+        accessibilityRole="button"
+        accessibilityLabel="Add expense"
+        accessibilityHint="Opens the add expense screen"
+        onPress={openAddExpense}
+        onPressIn={() => {
+          pressed.set(withTiming(1, { duration: motion.instant }));
         }}
-        style={styles.sideSlot}
-      >
-        <NavVisual label="Home" icon="home" selected={homeFocused} />
-      </Pressable>
-
-      <ViewCenter>
-        <AddNavButton />
-      </ViewCenter>
-
-      <Pressable
-        testID="nav-expenses"
-        accessibilityRole="tab"
-        accessibilityLabel="Expenses"
-        accessibilityState={{ selected: expensesFocused }}
-        onPress={() => {
-          if (!expensesFocused) {
-            Haptics.selectionAsync().catch(() => {});
-          }
-
-          onExpensesPress?.();
+        onPressOut={() => {
+          pressed.set(withTiming(0, { duration: motion.fast }));
         }}
-        style={styles.sideSlot}
+        hitSlop={6}
       >
-        <NavVisual label="Expenses" icon="receipt" selected={expensesFocused} />
+        <Animated.View style={[styles.addHalo, animatedStyle]}>
+          <GlassSurface
+            solid
+            blurred={false}
+            radius={radii.pill}
+            shadow="md"
+            style={styles.addCircle}
+          >
+            <Icon name="plus" size={22} color={colors.textOnAccent} testID="nav-add-icon" />
+          </GlassSurface>
+        </Animated.View>
       </Pressable>
-    </GlassSurface>
+    </View>
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* Visual nav item                                                            */
-/* -------------------------------------------------------------------------- */
-
-function NavVisual({
-  label,
-  icon,
-  selected,
-}: {
-  label: string;
-  icon: IconName;
-  selected: boolean;
-}) {
-  return (
-    <ViewCenter>
-      <Animated.View style={styles.itemContent}>
-        <Icon
-          name={icon}
-          size={ICON_SIZE}
-          color={selected ? colors.text : colors.textTertiary}
-          strokeWidth={selected ? 2.3 : 1.9}
-          optical
-        />
-
-        <Text
-          variant="navLabel"
-          tone={selected ? "primary" : "secondary"}
-          style={selected ? styles.labelSelected : styles.label}
-          numberOfLines={1}
-        >
-          {label}
-        </Text>
-      </Animated.View>
-    </ViewCenter>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/* Small layout helper                                                        */
-/* -------------------------------------------------------------------------- */
-
-function ViewCenter({ children }: { children: React.ReactNode }) {
-  return <Animated.View style={styles.center}>{children}</Animated.View>;
+function openAddExpense() {
+  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {
+    // Haptics are unavailable on web and some devices. Never block the tap.
+  });
+  router.push("/add-expense");
 }
 
 /* -------------------------------------------------------------------------- */
@@ -488,14 +416,8 @@ const styles = StyleSheet.create({
     },
   },
 
-  sideSlot: {
+  centerSlot: {
     flex: 1,
-    height: HEIGHT,
-
-    alignItems: "center",
-    justifyContent: "center",
-
-    minHeight: touchTarget.navItemMinHeight,
   },
 
   item: {
@@ -515,56 +437,42 @@ const styles = StyleSheet.create({
     gap: ICON_LABEL_GAP,
   },
 
-  center: {
-    width: ADD_BUTTON_SIZE + 16,
-    height: HEIGHT,
-
+  addOverlay: {
+    // `navBarPosition` supplies `position: 'absolute'`, `left` and `right`, so
+    // this box already covers the bar; these two inputs simply centre the
+    // button in it.
     alignItems: "center",
     justifyContent: "center",
-  },
-
-  addButtonTouchTarget: {
-    width: ADD_BUTTON_SIZE + 12,
     height: HEIGHT,
-
-    alignItems: "center",
-    justifyContent: "center",
+    // Lets touches pass through to the triggers except on the button itself.
+    pointerEvents: "box-none",
   },
 
   addHalo: {
-    width: ADD_BUTTON_SIZE,
-    height: ADD_BUTTON_SIZE,
-
-    borderRadius: ADD_BUTTON_SIZE / 2,
-
+    width: 52,
+    height: 52,
+    borderRadius: radii.pill,
     alignItems: "center",
     justifyContent: "center",
-
     backgroundColor: "rgba(108, 123, 255, 0.20)",
     borderWidth: 1,
     borderColor: "rgba(108, 123, 255, 0.38)",
-
     shadowColor: colors.accent,
     shadowOpacity: 0.35,
-    shadowRadius: 12,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
     elevation: 8,
   },
 
-  addButtonCore: {
-    width: ADD_BUTTON_SIZE - 10,
-    height: ADD_BUTTON_SIZE - 10,
-
-    borderRadius: (ADD_BUTTON_SIZE - 10) / 2,
-
+  addCircle: {
+    width: 42,
+    height: 42,
+    borderRadius: radii.pill,
     alignItems: "center",
     justifyContent: "center",
-
     backgroundColor: colors.accent,
+    minWidth: touchTarget.min - 2,
+    minHeight: touchTarget.min - 2,
   },
 
   label: {
