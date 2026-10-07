@@ -19,7 +19,8 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": true
+      "predictiveBackGestureEnabled": true,
+      "package": "com.anonymous.expensetracker"
     },
     "plugins": [
       [
@@ -31,7 +32,8 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#080B12"
+          "backgroundColor": "#080B12",
+          "image": "./assets/images/icon.png"
         }
       ],
       "expo-sqlite",
