@@ -7,6 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { AmbientBackground } from '@/components/glass/ambient-background';
 import { GlassBlurProvider } from '@/components/glass/glass-surface';
+import { useCategoryStore } from '@/store/categoryStore';
 import { colors, glass } from '@/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -34,6 +35,13 @@ export default function RootLayout() {
     SplashScreen.hideAsync().catch(() => {
       // Ignore: the splash is already dismissed.
     });
+
+    /*
+      Custom categories are definitional, not per-screen state: the picker on
+      Add Expense, the history rows and the dashboard breakdown all need them,
+      so they are loaded once here at startup rather than fetched per screen.
+    */
+    void useCategoryStore.getState().load();
   }, []);
 
   return (

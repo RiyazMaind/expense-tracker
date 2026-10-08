@@ -1,6 +1,8 @@
 import * as SQLite from 'expo-sqlite';
 
 import { runMigrations } from '@/database/migrations';
+import type { QueryableDatabase } from '@/database/queryable';
+import { serializeDatabase } from '@/database/serialized-database';
 
 /**
  * Opening the app's database.
@@ -28,7 +30,7 @@ export const DATABASE_NAME = 'expenses.db';
  * `.catch` below makes sure a failed attempt is forgotten so the next caller
  * retries rather than inheriting a dead connection forever.
  */
-let connection: Promise<SQLite.SQLiteDatabase> | null = null;
+let connection: Promise<QueryableDatabase> | null = null;
 
 /**
  * Open a database and bring it to the latest schema version.
@@ -56,13 +58,25 @@ export async function openDatabase(name: string = DATABASE_NAME): Promise<SQLite
   return db;
 }
 
-/** The app's single database connection, opened and migrated on first use. */
-export function getDatabase(): Promise<SQLite.SQLiteDatabase> {
-  connection ??= openDatabase().catch((error: unknown) => {
-    // Drop the memo so the next call retries from scratch.
-    connection = null;
-    throw error;
-  });
+/**
+ * The app's single database connection, opened and migrated on first use.
+ *
+ * What the app actually gets is the connection filtered through
+ * `serializeDatabase`. Every query on the one shared handle is queued so no two
+ * native statements are ever open at once — expo-sqlite on Android intermittently
+ * crashes or throws when concurrent async queries share a handle, and screens
+ * legitimately fire several queries at once (startup, the budget screen's paired
+ * reads). Repositories and services already accept `QueryableDatabase`, so the
+ * wrapper changes nothing about how they call SQL.
+ */
+export function getDatabase(): Promise<QueryableDatabase> {
+  connection ??= openDatabase()
+    .then((db) => serializeDatabase(db))
+    .catch((error: unknown) => {
+      // Drop the memo so the next call retries from scratch.
+      connection = null;
+      throw error;
+    });
 
   return connection;
 }

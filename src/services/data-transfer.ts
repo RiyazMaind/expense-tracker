@@ -1,4 +1,6 @@
-import { isCategoryId, type CategoryId } from '@/constants/categories';
+import { isCategoryId, isCustomCategoryId, type CategoryId } from '@/constants/categories';
+import { isIconName } from '@/components/ui/icon-catalog';
+import { CATEGORY_NAME_MAX_LENGTH } from '@/database/repositories/category-repository';
 import type { QueryableDatabase, TransactionRunner } from '@/database/queryable';
 import { isValidDateKey, isValidMonthKey } from '@/utils/dates';
 
@@ -17,7 +19,7 @@ import { isValidDateKey, isValidMonthKey } from '@/utils/dates';
  */
 
 export const EXPORT_FORMAT = 'expense-tracker-backup';
-export const EXPORT_VERSION = 1;
+export const EXPORT_VERSION = 2;
 
 export type ExportExpense = {
   id: number;
@@ -37,12 +39,21 @@ export type ExportBudget = {
   updatedAt: string;
 };
 
+export type ExportCategory = {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  createdAt: string;
+};
+
 export type ExportPayload = {
   format: typeof EXPORT_FORMAT;
   version: number;
   exportedAt: string;
   expenses: ExportExpense[];
   budgets: ExportBudget[];
+  categories: ExportCategory[];
 };
 
 /** What an import did, for the confirmation line in Settings. */
@@ -55,6 +66,9 @@ export type ImportResult = {
   budgetsInserted: number;
   budgetsSkippedDuplicate: number;
   budgetsSkippedConflict: number;
+  categoriesInserted: number;
+  categoriesSkippedDuplicate: number;
+  categoriesSkippedConflict: number;
 };
 
 type ExpenseRow = {
@@ -75,13 +89,24 @@ type BudgetRow = {
   updated_at: string;
 };
 
-/** Read every expense and budget, shaped for the export file. */
+type CategoryRow = {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  created_at: string;
+};
+
+/** Read every expense, budget and category, shaped for the export file. */
 export async function buildExport(db: QueryableDatabase): Promise<ExportPayload> {
   const expenses = await db.getAllAsync<ExpenseRow>(
     'SELECT id, amount_minor, category, note, date, created_at, updated_at FROM expenses ORDER BY id',
   );
   const budgets = await db.getAllAsync<BudgetRow>(
     'SELECT id, month, amount_minor, created_at, updated_at FROM budgets ORDER BY id',
+  );
+  const categories = await db.getAllAsync<CategoryRow>(
+    'SELECT id, name, icon, color, created_at FROM categories ORDER BY id',
   );
 
   return {
@@ -103,6 +128,13 @@ export async function buildExport(db: QueryableDatabase): Promise<ExportPayload>
       amountMinor: row.amount_minor,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
+    })),
+    categories: categories.map((row) => ({
+      id: row.id,
+      name: row.name,
+      icon: row.icon,
+      color: row.color,
+      createdAt: row.created_at,
     })),
   };
 }
@@ -193,11 +225,48 @@ function validateBudgetRow(row: unknown, index: number): asserts row is ExportBu
   }
 }
 
+function validateCategoryRow(row: unknown, index: number): asserts row is ExportCategory {
+  if (typeof row !== 'object' || row === null || Array.isArray(row)) {
+    fail(`category #${index + 1} is not an object`);
+  }
+
+  const candidate = row as Record<string, unknown>;
+
+  if (typeof candidate.id !== 'string' || !isCustomCategoryId(candidate.id)) {
+    fail(`category #${index + 1} id must be a custom category id`);
+  }
+
+  if (typeof candidate.name !== 'string' || candidate.name.trim() === '') {
+    fail(`category ${candidate.id} name must be a non-empty string`);
+  }
+  if (candidate.name.length > CATEGORY_NAME_MAX_LENGTH) {
+    fail(`category ${candidate.id} name must be at most ${CATEGORY_NAME_MAX_LENGTH} characters`);
+  }
+
+  if (typeof candidate.icon !== 'string' || !isIconName(candidate.icon)) {
+    fail(`category ${candidate.id} icon must be a known icon`);
+  }
+
+  if (typeof candidate.color !== 'string' || !CATEGORY_COLOR_PATTERN.test(candidate.color)) {
+    fail(`category ${candidate.id} color must be a hex colour`);
+  }
+
+  if (!isIsoTimestamp(candidate.createdAt)) {
+    fail(`category ${candidate.id} createdAt must be an ISO timestamp`);
+  }
+}
+
+const CATEGORY_COLOR_PATTERN = /^#[0-9a-fA-F]{6}$/;
+
 /**
  * Parse and fully validate backup JSON.
  *
  * Every row is checked before the caller is allowed to write anything, so an
  * import either applies entirely or is rejected as a whole.
+ *
+ * Version 1 files predate user-created categories and are still accepted —
+ * restoring an old backup must not be possible to fail — but they carry no
+ * category definitions, so the payload is normalised to an empty list.
  */
 export function parseImport(text: string): ExportPayload {
   let parsed: unknown;
@@ -218,8 +287,8 @@ export function parseImport(text: string): ExportPayload {
     fail(`format must be "${EXPORT_FORMAT}"`);
   }
 
-  if (candidate.version !== EXPORT_VERSION) {
-    fail(`version must be ${EXPORT_VERSION}, got ${String(candidate.version)}`);
+  if (candidate.version !== 1 && candidate.version !== EXPORT_VERSION) {
+    fail(`version must be 1 or ${EXPORT_VERSION}, got ${String(candidate.version)}`);
   }
 
   if (!isIsoTimestamp(candidate.exportedAt)) {
@@ -232,6 +301,15 @@ export function parseImport(text: string): ExportPayload {
 
   if (!Array.isArray(candidate.budgets)) {
     fail('budgets must be an array');
+  }
+
+  const version = candidate.version;
+
+  if (version >= 2) {
+    if (!Array.isArray(candidate.categories)) {
+      fail('categories must be an array');
+    }
+    (candidate.categories as unknown[]).forEach(validateCategoryRow);
   }
 
   candidate.expenses.forEach(validateExpenseRow);
@@ -258,7 +336,18 @@ export function parseImport(text: string): ExportPayload {
     budgetMonths.add(row.monthKey);
   }
 
-  return candidate as unknown as ExportPayload;
+  const categoryIds = new Set<string>();
+  for (const row of (candidate.categories as ExportCategory[] | undefined) ?? []) {
+    if (categoryIds.has(row.id)) {
+      fail(`duplicate category id ${row.id} inside the file`);
+    }
+    categoryIds.add(row.id);
+  }
+
+  return {
+    ...(candidate as unknown as ExportPayload),
+    categories: version >= 2 ? (candidate.categories as ExportCategory[]) : [],
+  };
 }
 
 function sameExpenseContent(a: ExpenseRow, row: ExportExpense): boolean {
@@ -281,6 +370,15 @@ function sameBudgetContent(a: BudgetRow, row: ExportBudget): boolean {
   );
 }
 
+function sameCategoryContent(a: CategoryRow, row: ExportCategory): boolean {
+  return (
+    a.name === row.name &&
+    a.icon === row.icon &&
+    a.color === row.color &&
+    a.created_at === row.createdAt
+  );
+}
+
 /**
  * Apply a validated payload in a single transaction.
  *
@@ -288,6 +386,9 @@ function sameBudgetContent(a: BudgetRow, row: ExportBudget): boolean {
  * Conflicts are deterministic: an incoming row with an id that already exists
  * locally is skipped unless it is byte-identical, in which case it is a counted
  * duplicate. The local row always wins — import never overwrites.
+ *
+ * Categories are imported first, so the expenses that reference them find their
+ * definitions already in place.
  */
 export async function importData(
   db: QueryableDatabase,
@@ -300,14 +401,60 @@ export async function importData(
     budgetsInserted: 0,
     budgetsSkippedDuplicate: 0,
     budgetsSkippedConflict: 0,
+    categoriesInserted: 0,
+    categoriesSkippedDuplicate: 0,
+    categoriesSkippedConflict: 0,
   };
 
   await db.withExclusiveTransactionAsync(async (txn) => {
+    await importCategories(txn, payload.categories, result);
     await importExpenses(txn, payload.expenses, result);
     await importBudgets(txn, payload.budgets, result);
   });
 
   return result;
+}
+
+async function importCategories(
+  txn: TransactionRunner,
+  rows: ExportCategory[],
+  result: ImportResult,
+): Promise<void> {
+  for (const row of rows) {
+    const existing = await txn.getFirstAsync<CategoryRow>(
+      'SELECT id, name, icon, color, created_at FROM categories WHERE id = ?',
+      [row.id],
+    );
+
+    if (existing != null) {
+      if (sameCategoryContent(existing, row)) {
+        result.categoriesSkippedDuplicate += 1;
+      } else {
+        result.categoriesSkippedConflict += 1;
+      }
+      continue;
+    }
+
+    // A different id already owning this name is also a conflict: two chips
+    // that read the same defeat the point of naming a category, and the
+    // local category wins.
+    const byName = await txn.getFirstAsync<{ id: string }>(
+      'SELECT id FROM categories WHERE lower(name) = lower(?)',
+      [row.name],
+    );
+
+    if (byName != null) {
+      result.categoriesSkippedConflict += 1;
+      continue;
+    }
+
+    await txn.runAsync(
+      `INSERT INTO categories (id, name, icon, color, created_at)
+       VALUES (?, ?, ?, ?, ?)`,
+      [row.id, row.name, row.icon, row.color, row.createdAt],
+    );
+    result.categoriesInserted += 1;
+  }
 }
 
 async function importExpenses(
@@ -388,6 +535,10 @@ async function importBudgets(
  * The two DELETEs commit together or roll back together, so the app can never
  * be left with a half-cleared history. sqlite_sequence is reset so a fresh
  * start afterwards reuses small ids.
+ *
+ * User-created categories are deliberately left in place: they are definitions,
+ * not data, and clearing history is not a reason to make the user rebuild their
+ * categories.
  */
 export async function deleteAllData(db: QueryableDatabase): Promise<void> {
   await db.withExclusiveTransactionAsync(async (txn) => {

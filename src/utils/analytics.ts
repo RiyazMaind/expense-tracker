@@ -132,7 +132,9 @@ export function resolveAnalyticsPeriods(reference: Date = new Date()): Analytics
  * different spellings the app does not recognise both resolve to `other` and
  * have to end up as one row. Ordering is total then entry count then the
  * canonical category order, so a tie between two equally small categories always
- * renders in the same sequence.
+ * renders in the same sequence. User-created categories sort after all builtins
+ * with nothing to move against a builtin, and keep one another's
+ * pre-sort order because `Array#sort` is stable.
  */
 export function mergeCategoryAmounts(
   rows: readonly CategoryAmount[],
@@ -158,7 +160,7 @@ export function mergeCategoryAmounts(
       (a, b) =>
         b.totalPaise - a.totalPaise ||
         b.entryCount - a.entryCount ||
-        (rank.get(a.category) ?? 0) - (rank.get(b.category) ?? 0),
+        (rank.get(a.category) ?? categories.length) - (rank.get(b.category) ?? categories.length),
     );
 }
 

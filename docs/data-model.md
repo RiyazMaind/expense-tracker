@@ -27,6 +27,8 @@ updated_at
 
 `category`
 - Category identifier
+- Either a builtin id (`food`, `transport`, …) or a user-created id (`custom:…`)
+- Unknown identifiers resolve to the builtin "Other" rather than failing a query
 
 `note`
 - Optional text
@@ -40,6 +42,41 @@ updated_at
 
 `updated_at`
 - Last modification timestamp
+
+## Categories
+
+```text
+categories
+----------
+id
+name
+icon
+color
+created_at
+```
+
+The builtin nine categories are defined in code (`src/constants/categories.ts`)
+and are not stored. This table holds only user-created categories, added from
+the category picker on Add Expense.
+
+`id`
+- Text primary key, formatted `custom:<a-z0-9>`
+
+`name`
+- Display name, unique per device (case-insensitive), max 24 characters
+
+`icon`
+- One of the picker icon set (`src/components/ui/icon-catalog.ts`)
+
+`color`
+- Hex colour assigned from the palette in `src/constants/categories.ts`
+
+`created_at`
+- Creation timestamp
+
+Categories are definitions, not data: "delete all data" in Settings removes
+expenses and budgets but keeps categories, so clearing history does not force
+the user to rebuild them.
 
 ## Budgets
 

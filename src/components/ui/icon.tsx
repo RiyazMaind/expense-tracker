@@ -2,6 +2,7 @@ import Svg, { Path } from 'react-native-svg';
 import { StyleSheet, View } from 'react-native';
 
 import { colors } from '@/theme';
+import type { IconName } from './icon-catalog';
 
 /**
  * The app's icon system.
@@ -20,28 +21,7 @@ import { colors } from '@/theme';
  * `react-native-svg` is the renderer only (it ships with Expo Go); the paths
  * below are this project's own.
  */
-export type IconName =
-  | 'home'
-  | 'receipt'
-  | 'chart'
-  | 'wallet'
-  | 'sliders'
-  | 'plus'
-  | 'close'
-  | 'check'
-  | 'trash'
-  | 'calendar'
-  | 'chevronLeft'
-  | 'chevronRight'
-  // Expense categories (docs/product.md).
-  | 'food'
-  | 'transport'
-  | 'shopping'
-  | 'entertainment'
-  | 'health'
-  | 'education'
-  | 'groceries'
-  | 'other';
+export type { IconName } from './icon-catalog';
 
 /** The grid every path is authored on. */
 const GRID = 24;
@@ -157,6 +137,128 @@ const paths: Record<IconName, readonly string[]> = {
 
   // Ring only — the three dots are drawn separately, see `dots`.
   other: ['M12 3.9a8.1 8.1 0 1 0 0 16.2 8.1 8.1 0 0 0 0-16.2'],
+
+  // Magnifier: circle off-centre up-left, a short handle down-right.
+  search: [
+    'M10.5 5.1a5.4 5.4 0 1 0 0 10.8 5.4 5.4 0 0 0 0-10.8',
+    'M14.6 14.6 19 19',
+  ],
+
+  // Coffee: two steam curls over a cup with an overlapping handle.
+  coffee: [
+    'M8.4 6.6c.7-.9.7-1.8 0-2.7',
+    'M12.3 6.6c.7-.9.7-1.8 0-2.7',
+    'M4 9.4h12.4v3.1a3.4 3.4 0 0 1-3.4 3.4H7.4a3.4 3.4 0 0 1-3.4-3.4V9.4z',
+    'M16.4 10.9h.4a1.9 1.9 0 0 1 0 3.8h-.4',
+  ],
+
+  // Gift: box with lid band, a ribbon down the middle, and two loops for a bow.
+  gift: [
+    'M4.6 10.9h14.8v7.8a1.6 1.6 0 0 1-1.6 1.6H6.2a1.6 1.6 0 0 1-1.6-1.6V10.9z',
+    'M4.2 7.9h15.6v1.4H4.2z',
+    'M12 9.3v11',
+    'M7.5 8.7a2 2 0 1 0 0-4 2 2 0 0 0 0 4',
+    'M16.5 8.7a2 2 0 1 0 0-4 2 2 0 0 0 0 4',
+  ],
+
+  // Paper plane: folded dart with a crease from the left wing tip.
+  plane: [
+    'M3.4 12.4 20.6 3.4 15.4 20.7z',
+    'M3.4 12.4 11 6.2',
+  ],
+
+  // Paw: a large pad with four toes arcing over it.
+  paw: [
+    'M8 15.8a4 4 0 1 0 8 0 4 4 0 0 0-8 0',
+    'M4.7 9.6a1.9 2.3 0 1 0 3.8 0 1.9 2.3 0 0 0-3.8 0',
+    'M8.1 7.9a1.9 2.3 0 1 0 3.8 0 1.9 2.3 0 0 0-3.8 0',
+    'M12.1 7.9a1.9 2.3 0 1 0 3.8 0 1.9 2.3 0 0 0-3.8 0',
+    'M15.5 9.6a1.9 2.3 0 1 0 3.8 0 1.9 2.3 0 0 0-3.8 0',
+  ],
+
+  // Barbell: central bar with two plate pairs.
+  dumbbell: [
+    'M4.8 12h14.4',
+    'M4.8 7.8h2.4v8.4h-2.4z',
+    'M7.2 8.8h2.4v6.4h-2.4z',
+    'M14.4 8.8h2.4v6.4h-2.4z',
+    'M16.8 7.8h2.4v8.4h-2.4z',
+  ],
+
+  // Pacifier: grip ring bar, a rounded shield, and the nipple bulb below.
+  baby: [
+    'M12 4.6a2.6 2.6 0 1 0 0 5.2 2.6 2.6 0 0 0 0-5.2',
+    'M9.4 7.2h5.2',
+    'M6.8 10.6h10.4v1.6a1.6 1.6 0 0 1-1.6 1.6H8.4a1.6 1.6 0 0 1-1.6-1.6V10.6z',
+    'M10.1 15a1.9 1.9 0 1 0 3.8 0 1.9 1.9 0 0 0-3.8 0',
+  ],
+
+  // Party hat: pom on top, a cone, and a straight brim.
+  party: [
+    'M10.5 4.2a1.6 1.6 0 1 0 3.2 0 1.6 1.6 0 0 0-3.2 0',
+    'M6.9 15.4 12.1 6l5.2 9.4z',
+    'M5.9 16.6h12.4',
+  ],
+
+  // Cog: hub with eight plate lines — tools, settings, maintenance.
+  tools: [
+    'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6',
+    'M12 9V6.6',
+    'M15 12h2.4',
+    'M12 15v2.4',
+    'M9 12H6.6',
+    'M14.1 9.9 15.9 8.1',
+    'M14.1 14.1 15.9 15.9',
+    'M9.9 14.1 8.1 15.9',
+    'M9.9 9.9 8.1 8.1',
+  ],
+
+  // Flower: four petals around a centre, on a stem.
+  flower: [
+    'M10.1 6.6a1.9 1.9 0 1 0 3.8 0 1.9 1.9 0 0 0-3.8 0',
+    'M13.5 10a1.9 1.9 0 1 0 3.8 0 1.9 1.9 0 0 0-3.8 0',
+    'M10.1 13.4a1.9 1.9 0 1 0 3.8 0 1.9 1.9 0 0 0-3.8 0',
+    'M6.7 10a1.9 1.9 0 1 0 3.8 0 1.9 1.9 0 0 0-3.8 0',
+    'M9.8 10a2.2 2.2 0 1 0 4.4 0 2.2 2.2 0 0 0-4.4 0',
+    'M12 13.4v6',
+  ],
+
+  // Smartphone: rounded screen body with a speaker and a home bar.
+  phone: [
+    'M7.8 4.4h8.4a1.4 1.4 0 0 1 1.4 1.4v12.4a1.4 1.4 0 0 1-1.4 1.4H7.8a1.4 1.4 0 0 1-1.4-1.4V5.8a1.4 1.4 0 0 1 1.4-1.4z',
+    'M10 6.8h4',
+    'M10 17.4h4',
+  ],
+
+  // Banknote: a note with a coin circle and a value line.
+  banknote: [
+    'M4.6 6.8h14.8v10.7a1.2 1.2 0 0 1-1.2 1.2H5.8a1.2 1.2 0 0 1-1.2-1.2V6.8z',
+    'M10 10a2 2 0 1 0 4 0 2 2 0 0 0-4 0',
+    'M12 15.4c1.2-1.2 2.4-1.2 3.6 0',
+  ],
+
+  // Bed: mattress frame, headboard rail, two legs and a pillow.
+  bed: [
+    'M3.6 9.6h16.8v6.4a1.4 1.4 0 0 1-1.4 1.4H5a1.4 1.4 0 0 1-1.4-1.4V9.6z',
+    'M3.6 9.6V7h3',
+    'M5.4 17.4v2',
+    'M18.6 17.4v2',
+    'M5.4 10.6h5v2.4H5.4z',
+  ],
+
+  // Laptop: screen on a wider base.
+  laptop: [
+    'M4.7 5.8h14.6v9.3a1 1 0 0 1-1 1H5.7a1 1 0 0 1-1-1z',
+    'M3.4 18.4h17.2',
+    'M5.7 16.1 3.4 18.4',
+    'M18.3 16.1 20.6 18.4',
+  ],
+
+  // Droplet nested; reads as "fuel / refill / low".
+  fuel: [
+    'M12 4.2C8.7 8 6.4 10.9 6.4 13.9A5.6 5.6 0 0 0 12 19.9a5.6 5.6 0 0 0 5.6-6c0-3-2.3-5.9-5.6-9.7z',
+    'M12 7.8c-1.7 2.2-2.8 3.9-2.8 5.4A2.8 2.8 0 0 0 12 16.2a2.8 2.8 0 0 0 2.8-3c0-1.5-1.1-3.2-2.8-5.4z',
+  ],
 };
 
 /**
@@ -240,6 +342,36 @@ const ink: Record<IconName, { x: number; y: number; width: number; height: numbe
   education: { x: 2.9, y: 3.7, width: 18.2, height: 16.7 },
   groceries: { x: 2.7, y: 2.9, width: 18.6, height: 17.8 },
   other: { x: 2.9, y: 2.9, width: 18.2, height: 18.2 },
+  // Circle 5.1–15.9 with the handle cursor to (19,19) at a 45° line.
+  search: { x: 4.1, y: 4.1, width: 15.9, height: 15.9 },
+  // Body 4–16.4; handle loops out to 18.7; steam carries the tops to 2.9.
+  coffee: { x: 3.0, y: 2.9, width: 16.7, height: 14.0 },
+  // Lid spans the widest at 4.2–19.8; the ribbon carries the bottom to ~21.3.
+  gift: { x: 3.2, y: 5.7, width: 17.6, height: 15.6 },
+  // A dart: nose (20.6, 3.4) to tip (15.4, 20.7), left wing (3.4, 12.4).
+  plane: { x: 2.4, y: 2.4, width: 19.2, height: 19.2 },
+  // Toes 4.7–19.3 over the pad 8–16, pad floor at 19.8.
+  paw: { x: 3.7, y: 4.6, width: 16.6, height: 16.2 },
+  // Bar 4.8–19.2; plates 7.8–16.2 make the height.
+  dumbbell: { x: 3.7, y: 6.8, width: 16.6, height: 10.4 },
+  // Shield 6.8–17.2, ring to 4.6, bulb to 16.9.
+  baby: { x: 5.8, y: 3.6, width: 12.4, height: 14.3 },
+  // Brim 5.9–18.3; pom carries the top to ~2.6.
+  party: { x: 4.9, y: 1.6, width: 14.4, height: 16.0 },
+  // Teeth 6.6–17.4 around the hub, symmetric about 12.
+  tools: { x: 5.6, y: 5.6, width: 12.8, height: 12.8 },
+  // Petals 6.7–15.4; the stem runs to 19.4.
+  flower: { x: 5.7, y: 5.6, width: 10.7, height: 14.8 },
+  // Body 7.8–17.6 by 4.4–18.2 — tall and narrow like the receipt.
+  phone: { x: 6.8, y: 3.4, width: 11.8, height: 15.8 },
+  // Note 4.6–19.4 by 6.8–18.7, wide and short.
+  banknote: { x: 3.6, y: 5.8, width: 16.8, height: 13.9 },
+  // Frame 3.6–20.4, legs to 19.4, headboard to 6.
+  bed: { x: 2.6, y: 6.0, width: 18.8, height: 14.4 },
+  // Screen 4.7–19.3; the base rails make it the widest glyph.
+  laptop: { x: 2.4, y: 4.8, width: 19.2, height: 14.6 },
+  // Droplet 6.4–17.6 by 4.2–19.9 — tall, like the receipt.
+  fuel: { x: 5.4, y: 3.2, width: 13.2, height: 17.7 },
 };
 
 /**
@@ -382,3 +514,18 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
 });
+
+/*
+  The catalogue — icon name unions, the picker set, search hints and the
+  predicates over them — lives in `icon-catalog.ts`, a module with no JSX, so
+  pure modules in the test graph (`data-transfer`, the category repository)
+  can validate names without loading this renderer. Re-exported here so every
+  consumer keeps the one import path.
+*/
+export {
+  CATEGORY_ICON_NAMES,
+  categoryIconLabel,
+  categoryIconMatches,
+  isIconName,
+  type CategoryIconName,
+} from './icon-catalog';

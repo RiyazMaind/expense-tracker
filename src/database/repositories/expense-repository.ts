@@ -372,10 +372,11 @@ function clampPageSize(limit: number | undefined): number {
 /**
  * Map a raw row to an `Expense`.
  *
- * The category falls back to `other` rather than throwing: a row written by a
- * future version of the app, or by a corrupted write, should still render in a
- * list — just under the category that means "unrecognised". Failing the whole
- * query instead would take the dashboard down over one unreadable row.
+ * The category falls back to `other` rather than throwing: a row whose category
+ * is neither a builtin nor a well-formed user-created id — written by a future
+ * version of the app, or by a corrupted write — should still render in a list,
+ * just under the category that means "unrecognised". Failing the whole query
+ * instead would take the dashboard down over one unreadable row.
  */
 function toExpense(row: ExpenseRow): Expense {
   return {

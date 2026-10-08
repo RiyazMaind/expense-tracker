@@ -30,6 +30,7 @@ import {
   parseImport,
   serializeExport,
 } from '@/services/data-transfer';
+import { useCategoryStore } from '@/store/categoryStore';
 import { useExpenseStore } from '@/store/expenseStore';
 import { colors, navigation, spacing, touchTarget } from '@/theme';
 
@@ -43,19 +44,28 @@ type DataStatus =
 function describeImport(result: {
   expensesInserted: number;
   budgetsInserted: number;
+  categoriesInserted: number;
   expensesSkippedDuplicate: number;
   budgetsSkippedDuplicate: number;
+  categoriesSkippedDuplicate: number;
   expensesSkippedConflict: number;
   budgetsSkippedConflict: number;
+  categoriesSkippedConflict: number;
 }): string {
-  const parts = [`Restored ${result.expensesInserted} expenses and ${result.budgetsInserted} budgets.`];
+  const parts = [
+    `Restored ${result.expensesInserted} expenses, ${result.budgetsInserted} budgets and ${result.categoriesInserted} categories.`,
+  ];
 
-  const duplicates = result.expensesSkippedDuplicate + result.budgetsSkippedDuplicate;
+  const duplicates =
+    result.expensesSkippedDuplicate +
+    result.budgetsSkippedDuplicate +
+    result.categoriesSkippedDuplicate;
   if (duplicates > 0) {
     parts.push(`Skipped ${duplicates} duplicates.`);
   }
 
-  const conflicts = result.expensesSkippedConflict + result.budgetsSkippedConflict;
+  const conflicts =
+    result.expensesSkippedConflict + result.budgetsSkippedConflict + result.categoriesSkippedConflict;
   if (conflicts > 0) {
     parts.push(`Kept local data for ${conflicts} conflicts.`);
   }
@@ -114,7 +124,7 @@ export default function SettingsScreen() {
 
       setStatus({
         kind: 'done',
-        message: `Exported ${payload.expenses.length} expenses and ${payload.budgets.length} budgets.`,
+        message: `Exported ${payload.expenses.length} expenses, ${payload.budgets.length} budgets and ${payload.categories.length} categories.`,
       });
     } catch (error) {
       console.warn('[settings] export failed', error);
@@ -140,6 +150,7 @@ export default function SettingsScreen() {
       const result = await importData(await getDatabase(), payload);
 
       await loadSummary();
+      await useCategoryStore.getState().load();
 
       setStatus({ kind: 'done', message: describeImport(result) });
     } catch (error) {

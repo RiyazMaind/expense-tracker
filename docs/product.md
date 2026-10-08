@@ -101,6 +101,12 @@ Initial categories:
 
 The category list should remain easy to modify.
 
+From the Add Expense category picker the user can create their own categories:
+a name plus an icon chosen from a searchable picker. Created categories behave
+like the builtins everywhere — the picker, the history list and the dashboard
+breakdown — and are stored per device in the `categories` table
+(docs/data-model.md).
+
 ## Currency
 
 Initial currency: INR (₹).

@@ -15,11 +15,12 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Screen } from "@/components/ui/screen";
 import { ScreenHeader } from "@/components/ui/screen-header";
 import { SettingsIconButton } from "@/components/ui/settings-icon-button";
-import { getCategory } from "@/constants/categories";
+import { DEFAULT_CATEGORY_ID } from "@/constants/categories";
 import { getDatabase } from "@/database/database";
 import { AnalyticsRepository } from "@/database/repositories/analytics-repository";
 import { BudgetRepository } from "@/database/repositories/budget-repository";
 import { ExpenseRepository } from "@/database/repositories/expense-repository";
+import { useCategory } from "@/store/categoryStore";
 import { useExpenseStore } from "@/store/expenseStore";
 import { colors, spacing } from "@/theme";
 import {
@@ -267,6 +268,15 @@ export default function HomeScreen() {
       ? formatShortDay(fromDateKey(report.busiestDay.dateKey))
       : "—";
 
+  /*
+    Top category names itself through the same store the list rows use, so a
+    user-created category is spelled by its real label. The hook is called with a
+    fallback id rather than under a conditional, so the hook order never depends
+    on whether a report has loaded.
+  */
+  const topCategory = useCategory(report?.highestCategory?.category ?? DEFAULT_CATEGORY_ID);
+  const topCategoryLabel = report?.highestCategory != null ? topCategory.label : "—";
+
   const heroLabel = isCurrentMonth
     ? "Spent this month"
     : `Spent in ${formatMonthKey(displayKey)}`;
@@ -347,13 +357,9 @@ export default function HomeScreen() {
               value={report != null ? String(report.monthEntryCount) : "—"}
               testID="tile-month-count"
             />
-            <StatTile
+<StatTile
               label="Top category"
-              value={
-                report?.highestCategory != null
-                  ? getCategory(report.highestCategory.category).label
-                  : "—"
-              }
+              value={topCategoryLabel}
               testID="tile-top-category"
             />
           </>

@@ -4,7 +4,8 @@ import { StyleSheet, View } from 'react-native';
 import { GlassCard } from '@/components/glass/glass-card';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
-import { getCategory, type CategoryId } from '@/constants/categories';
+import { tint, DEFAULT_CATEGORY_ID, type CategoryId } from '@/constants/categories';
+import { useCategory } from '@/store/categoryStore';
 import { borders, colors, glass, radii, spacing } from '@/theme';
 import type { CategorySlice } from '@/utils/analytics';
 import { formatInr } from '@/utils/currency';
@@ -39,6 +40,7 @@ export function CategoryBreakdown({
   testID,
 }: CategoryBreakdownProps) {
   const highest = slices[0];
+  const highestLabel = useCategory(highest?.category ?? DEFAULT_CATEGORY_ID).label;
 
   return (
     <GlassCard
@@ -52,7 +54,7 @@ export function CategoryBreakdown({
       subtitle={
         highest == null
           ? undefined
-          : `${getCategory(highest.category).label} leads at ${formatInr(highest.totalPaise)} · ${highest.percent}%`
+          : `${highestLabel} leads at ${formatInr(highest.totalPaise)} · ${highest.percent}%`
       }
       testID={testID}
       accessibilityLabel={`Spending by category for ${periodLabel}. ${formatInr(totalPaise)} across ${slices.length} ${
@@ -95,7 +97,7 @@ const CategoryRow = memo(function CategoryRow({
   percent: number;
   periodLabel: string;
 }) {
-  const meta = getCategory(category);
+  const meta = useCategory(category);
   const amount = formatInr(totalPaise);
 
   const entriesLabel = entryCount === 1 ? '1 entry' : `${entryCount} entries`;
@@ -108,7 +110,7 @@ const CategoryRow = memo(function CategoryRow({
       accessibilityLabel={`${meta.label}, ${amount}, ${percent}% of ${periodLabel} spending, ${entriesLabel}`}
     >
       <View style={styles.top}>
-        <View style={[styles.badge, { backgroundColor: meta.badgeBg, borderColor: meta.color + '33' }]}>
+        <View style={[styles.badge, { backgroundColor: tint(meta.color), borderColor: meta.color + '33' }]}>
           <Icon name={meta.icon} size={18} color={meta.color} />
         </View>
 
@@ -130,7 +132,7 @@ const CategoryRow = memo(function CategoryRow({
           <Text variant="title3" tabular numberOfLines={1}>
             {amount}
           </Text>
-          <View style={[styles.percentBadge, { backgroundColor: meta.badgeBg }]}>
+          <View style={[styles.percentBadge, { backgroundColor: tint(meta.color) }]}>
             <Text variant="micro" tabular style={{ color: meta.color, fontWeight: '700' }}>
               {`${percent}%`}
             </Text>

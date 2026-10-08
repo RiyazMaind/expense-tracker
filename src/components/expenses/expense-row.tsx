@@ -4,7 +4,8 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { GlassSurface } from '@/components/glass/glass-surface';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
-import { getCategory, type CategoryId } from '@/constants/categories';
+import { tint, type CategoryId } from '@/constants/categories';
+import { useCategory } from '@/store/categoryStore';
 import { borders, glass, radii, spacing } from '@/theme';
 import { formatInr } from '@/utils/currency';
 
@@ -18,9 +19,11 @@ import { formatInr } from '@/utils/currency';
  * Primitive props only. FlatList memoises rows by comparing their props, and an
  * object prop would force a deep comparison or a re-render on every page load
  * (vercel-react-native-skills/rules/list-performance-item-memo.md,
- * list-performance-item-types.md). The row also holds no state and reads nothing
- * from a store — a list item that re-renders on unrelated app state defeats
- * virtualisation entirely.
+ * list-performance-item-types.md). The row also holds no state: the one store
+ * read, `useCategory`, subscribes to a single id's entry in a map of stable
+ * references, so a row re-renders only when that exact category appears — a
+ * builtin row never re-renders, and a list item does not re-render on unrelated
+ * app state, which is what keeps virtualisation honest.
  */
 
 /**
@@ -66,7 +69,7 @@ export const ExpenseRow = memo(function ExpenseRow({
     onOpen(id);
   }, [onOpen, id]);
 
-  const meta = getCategory(category);
+  const meta = useCategory(category);
   const amount = formatInr(amountMinor);
 
   /*
@@ -92,7 +95,7 @@ export const ExpenseRow = memo(function ExpenseRow({
         accessibilityHint="Opens this expense to edit or delete it"
         style={({ pressed }) => [styles.pressable, pressed && styles.pressed]}
       >
-        <View style={[styles.badge, { backgroundColor: meta.badgeBg, borderColor: meta.color + '33' }]}>
+        <View style={[styles.badge, { backgroundColor: tint(meta.color), borderColor: meta.color + '33' }]}>
           <Icon name={meta.icon} size={20} color={meta.color} />
         </View>
 

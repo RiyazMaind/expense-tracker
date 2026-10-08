@@ -22,6 +22,7 @@ import { createTestDatabase, type TestDatabase } from './support/node-sqlite-dri
 
 const EXPORTED_AT = '2026-10-06T10:30:00.000Z';
 
+/** A v2 payload. Categories default to empty; the round trips below prove they survive. */
 function payload(overrides: Partial<ExportPayload> = {}): ExportPayload {
   return {
     format: EXPORT_FORMAT,
@@ -56,6 +57,7 @@ function payload(overrides: Partial<ExportPayload> = {}): ExportPayload {
         updatedAt: '2026-10-01T00:00:00.000Z',
       },
     ],
+    categories: [],
     ...overrides,
   };
 }
@@ -112,6 +114,177 @@ describe('export → import round trip', () => {
 
     assert.equal(parsed.format, EXPORT_FORMAT);
     assert.equal(parsed.expenses[0]?.amountMinor, 25050);
+  });
+});
+
+describe('user-created categories in backups', () => {
+  const GYM = {
+    id: 'custom:gympass',
+    name: 'Gym',
+    icon: 'dumbbell',
+    color: '#F59E0B',
+    createdAt: '2026-10-02T09:00:00.000Z',
+  };
+
+  function categorizedPayload(): ExportPayload {
+    return payload({
+      categories: [GYM],
+      expenses: [
+        {
+          id: 3,
+          amountMinor: 1500,
+          category: 'custom:gympass',
+          note: 'Monthly pass',
+          date: '2026-10-03',
+          createdAt: '2026-10-03T08:00:00.000Z',
+          updatedAt: '2026-10-03T08:00:00.000Z',
+        },
+      ],
+    });
+  }
+
+  it('round trips the definition and the expense that references it', async () => {
+    const source = createTestDatabase();
+    await runMigrations(source);
+    await importData(source, categorizedPayload());
+
+    const exported = await buildExport(source);
+    assert.deepEqual(exported.categories, [GYM]);
+    assert.equal(exported.expenses[0]?.category, 'custom:gympass');
+
+    const target = createTestDatabase();
+    await runMigrations(target);
+    const result = await importData(target, parseImport(serializeExport(exported)));
+
+    assert.equal(result.categoriesInserted, 1);
+    assert.equal(result.expensesInserted, 1);
+    assert.deepEqual((await buildExport(target)).categories, [GYM]);
+
+    source.close();
+    target.close();
+  });
+
+  it('accepts version-1 files with no categories field', async () => {
+    const legacy = payload({ version: 1 }) as Partial<ExportPayload> & Record<string, unknown>;
+    delete legacy.categories;
+
+    const parsed = parseImport(JSON.stringify(legacy));
+    assert.deepEqual(parsed.categories, []);
+
+    const db = createTestDatabase();
+    await runMigrations(db);
+    const result = await importData(db, parsed);
+    assert.equal(result.categoriesInserted, 0);
+    assert.equal(result.expensesInserted, 2);
+
+    db.close();
+  });
+
+  it('rejects a category whose id is not a user-created id', () => {
+    const bad = payload({ categories: [{ ...GYM, id: 'food' }] });
+
+    assert.throws(() => parseImport(JSON.stringify(bad)), /id must be a custom category id/);
+  });
+
+  it('rejects a category with an unknown icon', () => {
+    const bad = payload({ categories: [{ ...GYM, icon: 'hyperspace' }] });
+
+    assert.throws(() => parseImport(JSON.stringify(bad)), /icon must be a known icon/);
+  });
+
+  it('rejects a category with a malformed colour', () => {
+    const bad = payload({ categories: [{ ...GYM, color: 'orange' }] });
+
+    assert.throws(() => parseImport(JSON.stringify(bad)), /color must be a hex colour/);
+  });
+
+  it('rejects a category with an overwritten name when a v2 file lacks categories', () => {
+    const bad = payload({ version: EXPORT_VERSION });
+    assert.throws(
+      () => parseImport(JSON.stringify({ ...bad, categories: undefined })),
+      /categories must be an array/,
+    );
+  });
+
+  it('rejects duplicate category ids inside the file', () => {
+    const bad = payload({ categories: [GYM, { ...GYM, name: 'Cruasank' }] });
+
+    assert.throws(() => parseImport(JSON.stringify(bad)), /duplicate category id custom:gympass/);
+  });
+
+  it('is idempotent for categories too', async () => {
+    const db = createTestDatabase();
+    await runMigrations(db);
+    await importData(db, categorizedPayload());
+
+    const result = await importData(db, categorizedPayload());
+
+    assert.equal(result.categoriesInserted, 0);
+    assert.equal(result.categoriesSkippedDuplicate, 1);
+    assert.equal(result.categoriesSkippedConflict, 0);
+
+    db.close();
+  });
+
+  it('keeps the local category on an id conflict and never overwrites', async () => {
+    const db = createTestDatabase();
+    await runMigrations(db);
+    await importData(db, categorizedPayload());
+
+    const moved = payload({
+      categories: [
+        { ...GYM, name: 'Gym renamed elsewhere' },
+        { ...GYM, id: 'custom:post', name: 'Post', icon: 'party', color: '#10B981' },
+      ],
+    });
+
+    const result = await importData(db, moved);
+
+    assert.equal(result.categoriesInserted, 1);
+    assert.equal(result.categoriesSkippedConflict, 1);
+
+    const exported = await buildExport(db);
+    assert.equal(exported.categories.length, 2);
+    assert.equal(
+      exported.categories.find((c) => c.id === 'custom:gympass')?.name,
+      'Gym',
+      'local definition must survive',
+    );
+
+    db.close();
+  });
+
+  it('treats a name owned by a different id as a conflict', async () => {
+    const db = createTestDatabase();
+    await runMigrations(db);
+    await importData(db, categorizedPayload());
+
+    const renamedId = payload({
+      categories: [{ ...GYM, id: 'custom:gym-2' }],
+      expenses: [],
+      budgets: [],
+    });
+
+    const result = await importData(db, renamedId);
+
+    assert.equal(result.categoriesInserted, 0);
+    assert.equal(result.categoriesSkippedConflict, 1);
+
+    db.close();
+  });
+
+  it('keeps categories when all history is wiped', async () => {
+    const db = createTestDatabase();
+    await runMigrations(db);
+    await importData(db, categorizedPayload());
+
+    await deleteAllData(db);
+
+    const exported = await buildExport(db);
+    assert.deepEqual(exported.categories, [GYM]);
+    assert.deepEqual(exported.expenses, []);
+
+    db.close();
   });
 });
 

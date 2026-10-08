@@ -137,9 +137,10 @@ export class AnalyticsRepository {
     /*
       An unrecognised category is reported as `other` rather than dropped, so a
       row written by a future version of the app still shows up in the breakdown
-      instead of silently shrinking the total. Several such rows can collapse
-      into one `other` group here; the arithmetic layer merges any duplicates
-      that reach it.
+      instead of silently shrinking the total. A well-formed user-created
+      category id passes `isCategoryId` and keeps its own row. Several
+      unrecognised rows can collapse into one `other` group here; the arithmetic
+      layer merges any duplicates that reach it.
     */
     return rows.map((row) => ({
       category: isCategoryId(row.category) ? row.category : 'other',

@@ -70,6 +70,27 @@ CREATE TABLE IF NOT EXISTS budgets (
 ) STRICT;
 `;
 
+/**
+ * User-created categories from docs/data-model.md.
+ *
+ * `id` is a namespaced `custom:<id>` string (shared with `expenses.category`
+ * and validated by `isCategoryId` in `constants/categories.ts`); `name` is
+ * display copy, `icon` the glyph from the house icon set, and `color` the
+ * category's identity colour assigned once at creation. No foreign key on
+ * `expenses.category` — the column freely holds builtin ids too, so a row
+ * whose category can't be identified just renders as "Other" like it does
+ * today.
+ */
+const CREATE_CATEGORIES = `
+CREATE TABLE IF NOT EXISTS categories (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL CHECK (length(name) > 0),
+  icon TEXT NOT NULL CHECK (length(icon) > 0),
+  color TEXT NOT NULL,
+  created_at TEXT NOT NULL
+) STRICT;
+`;
+
 export type Migration = {
   /** The `user_version` this migration leaves behind. Must be the previous max + 1. */
   readonly version: number;
@@ -84,6 +105,7 @@ export type Migration = {
 export const MIGRATIONS: readonly Migration[] = [
   { version: 1, statements: [CREATE_EXPENSES, ...CREATE_INDEXES] },
   { version: 2, statements: [CREATE_BUDGETS] },
+  { version: 3, statements: [CREATE_CATEGORIES] },
 ];
 
 const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1]?.version ?? 0;
